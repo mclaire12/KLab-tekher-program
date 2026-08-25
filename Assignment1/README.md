@@ -5,7 +5,7 @@ Python-for-AI coursework: fundamentals, NumPy/Pandas, and a small data-wrangling
 ## Setup
 
 ```
-cd Assignments
+cd Assignment1
 python -m venv ../venv          # if not already created
 ../venv/Scripts/Activate.ps1    # Windows PowerShell; macOS/Linux: source ../venv/bin/activate
 pip install -r requirements.txt
@@ -17,7 +17,7 @@ Copy `.env.example` to `.env` if you need local environment variables (none are 
 ## Repository structure
 
 ```
-Assignments/
+Assignment1/
 ├── data/
 │   ├── raw/            # source data, untouched (titanic.csv)
 │   └── processed/      # cleaned/feature-engineered output (titanic_clean.csv)
