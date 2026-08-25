@@ -6,7 +6,7 @@ Coursework repository for the K Lab AI cohort. Each class/assignment gets its ow
 
 ```
 KLab-tekher-program/
-├── Assignments/          # a self-contained coursework unit
+├── Assignment1/          # a self-contained coursework unit
 │   ├── data/
 │   │   ├── raw/              # source data, untouched
 │   │   └── processed/        # cleaned/derived output
@@ -29,7 +29,7 @@ Loose files at the repo root (`Claireproj1.ipynb`, `project 2/`) predate this st
 Each unit is set up independently, from inside its own folder:
 
 ```
-cd Assignments
+cd Assignment1
 python -m venv ../venv          # shared venv one level up, if not already created
 ../venv/Scripts/Activate.ps1    # Windows PowerShell; macOS/Linux: source ../venv/bin/activate
 pip install -r requirements.txt
@@ -40,4 +40,4 @@ jupyter notebook                # or open the folder in VS Code / Cursor
 
 ## What's inside Assignments
 
-See [Assignments/README.md](Assignments/README.md) for the notebooks, datasets, and reports specific to that unit (currently two notebooks: Python/NumPy/Pandas fundamentals, and a data-wrangling/exploratory-analysis pass on a real dataset).
+See [Assignment1/README.md](Assignment1/README.md) for the notebooks, datasets, and reports specific to that unit (currently two notebooks: Python/NumPy/Pandas fundamentals, and a data-wrangling/exploratory-analysis pass on a real dataset).
