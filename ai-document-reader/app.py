@@ -1,6 +1,6 @@
 """AI Document Reader - Part 1 (TF-IDF baseline). Run: python -m streamlit run app.py
 
-Model evaluation is done in code (training/train_language_detection.py -> results/),
+Model evaluation is done in code (training/train_language_detection_tfidf.py -> results/),
 not in this interface.
 """
 
@@ -90,7 +90,7 @@ try:
 except ModelNotTrainedError as exc:
     st.error(f"**Language detection model not found.**\n\n```\n{exc}\n```")
     st.info("Build the dataset and train the model first:\n\n"
-            "```bash\npython training/prepare_dataset.py\npython training/train_language_detection.py\n```")
+            "```bash\npython training/prepare_dataset.py\npython training/train_language_detection_tfidf.py\n```")
     st.stop()
 
 if uploaded is None:

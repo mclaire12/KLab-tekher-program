@@ -1,36 +1,36 @@
-﻿1) Loading and validating dataset
+1) Loading and validating dataset
   train: 23973 rows  french=7991  kinyarwanda=7991  english=7991
   test: 5994 rows  french=1998  kinyarwanda=1998  english=1998
 2) Stratified split of train.csv -> train / validation (80%/20%), seed=42
-  train=19178  validation=4795  test=5994
+  train=19178  validation=4795  test=5994  split fingerprint={'train': '9119e708d3ce726b', 'validation': '298416300f105cd3', 'test': '918d6f2a645d8230'}
 
 3) TF-IDF: tfidf_word_1gram  {'analyzer': 'word', 'ngram_range': (1, 1), 'token_pattern': "(?u)\\b\\w[\\w']*\\b", 'min_df': 2, 'sublinear_tf': True, 'max_features': 50000}
-   vocabulary size: 23397
-   LogisticRegression   val acc=0.9990  val macro-F1=0.9990  3-word val F1=0.9443  (0.5s)
-   LinearSVC            val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9556  (0.2s)
-   RandomForest         val acc=0.9967  val macro-F1=0.9967  3-word val F1=0.9113  (3.2s)
-   KNN                  val acc=0.9983  val macro-F1=0.9983  3-word val F1=0.9685  (0.1s)
+   representation: {'analyzer': 'word', 'ngram_range': [1, 1], 'min_df': 2, 'max_df': 1.0, 'max_features': 50000, 'sublinear_tf': True, 'norm': 'l2', 'use_idf': True, 'smooth_idf': True, 'lowercase': False, 'vocabulary_size': 23397}  (0.3s)
+   LogisticRegression   val acc=0.9990  val macro-F1=0.9990  3-word val F1=0.9443  (0.2s)
+   LinearSVC            val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9556  (0.1s)
+   RandomForest         val acc=0.9967  val macro-F1=0.9967  3-word val F1=0.9113  (1.2s)
+   KNN                  val acc=0.9983  val macro-F1=0.9983  3-word val F1=0.9685  (0.0s)
 
 3) TF-IDF: tfidf_word_1-2gram  {'analyzer': 'word', 'ngram_range': (1, 2), 'token_pattern': "(?u)\\b\\w[\\w']*\\b", 'min_df': 2, 'sublinear_tf': True, 'max_features': 100000}
-   vocabulary size: 56105
-   LogisticRegression   val acc=0.9992  val macro-F1=0.9992  3-word val F1=0.9495  (0.9s)
-   LinearSVC            val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9611  (0.3s)
-   RandomForest         val acc=0.9975  val macro-F1=0.9975  3-word val F1=0.9149  (4.6s)
+   representation: {'analyzer': 'word', 'ngram_range': [1, 2], 'min_df': 2, 'max_df': 1.0, 'max_features': 100000, 'sublinear_tf': True, 'norm': 'l2', 'use_idf': True, 'smooth_idf': True, 'lowercase': False, 'vocabulary_size': 56105}  (1.1s)
+   LogisticRegression   val acc=0.9992  val macro-F1=0.9992  3-word val F1=0.9495  (0.4s)
+   LinearSVC            val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9611  (0.1s)
+   RandomForest         val acc=0.9975  val macro-F1=0.9975  3-word val F1=0.9149  (2.0s)
    KNN                  val acc=0.9981  val macro-F1=0.9981  3-word val F1=0.9738  (0.0s)
 
 3) TF-IDF: tfidf_char_wb_1-3gram  {'analyzer': 'char_wb', 'ngram_range': (1, 3), 'min_df': 2, 'sublinear_tf': True, 'max_features': 50000}
-   vocabulary size: 8994
-   LogisticRegression   val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9734  (1.2s)
-   LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9754  (1.4s)
-   RandomForest         val acc=0.9992  val macro-F1=0.9992  3-word val F1=0.9565  (7.9s)
-   KNN                  val acc=0.9994  val macro-F1=0.9994  3-word val F1=0.9729  (0.1s)
+   representation: {'analyzer': 'char_wb', 'ngram_range': [1, 3], 'min_df': 2, 'max_df': 1.0, 'max_features': 50000, 'sublinear_tf': True, 'norm': 'l2', 'use_idf': True, 'smooth_idf': True, 'lowercase': False, 'vocabulary_size': 8994}  (1.8s)
+   LogisticRegression   val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9734  (0.4s)
+   LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9754  (0.4s)
+   RandomForest         val acc=0.9992  val macro-F1=0.9992  3-word val F1=0.9565  (3.2s)
+   KNN                  val acc=0.9994  val macro-F1=0.9994  3-word val F1=0.9729  (0.0s)
 
 3) TF-IDF: tfidf_char_wb_2-5gram  {'analyzer': 'char_wb', 'ngram_range': (2, 5), 'min_df': 2, 'sublinear_tf': True, 'max_features': 100000}
-   vocabulary size: 99533
-   LogisticRegression   val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9808  (2.6s)
+   representation: {'analyzer': 'char_wb', 'ngram_range': [2, 5], 'min_df': 2, 'max_df': 1.0, 'max_features': 100000, 'sublinear_tf': True, 'norm': 'l2', 'use_idf': True, 'smooth_idf': True, 'lowercase': False, 'vocabulary_size': 99533}  (2.7s)
+   LogisticRegression   val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9808  (1.0s)
    LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9835  (0.4s)
-   RandomForest         val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9711  (9.4s)
-   KNN                  val acc=0.9960  val macro-F1=0.9960  3-word val F1=0.9611  (0.1s)
+   RandomForest         val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9711  (4.6s)
+   KNN                  val acc=0.9960  val macro-F1=0.9960  3-word val F1=0.9611  (0.0s)
 
 4) Model selection (validation macro F1; ties -> 3-word validation F1 -> training time)
    BEST: LinearSVC + tfidf_char_wb_2-5gram  validation macro-F1=1.0000
@@ -40,9 +40,7 @@
    Deployed model: LinearSVC (calibrated)  test accuracy=0.9997  macro-F1=0.9997
 
 5) Saving models and results
-   C:\Users\marie\Desktop\K Lab\ai-document-reader\models\language_detection\tfidf_vectorizer.pkl
-   C:\Users\marie\Desktop\K Lab\ai-document-reader\models\language_detection\best_model.pkl
-   C:\Users\marie\Desktop\K Lab\ai-document-reader\models\language_detection\metadata.json
+   C:\Users\marie\Desktop\K Lab\ai-document-reader\models\language_detection\tfidf
    C:\Users\marie\Desktop\K Lab\ai-document-reader\results
 
 6) Results (macro-averaged; sorted by validation F1)

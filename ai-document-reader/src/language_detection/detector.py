@@ -1,4 +1,11 @@
-"""Load the trained TF-IDF + classifier and predict a document's language."""
+"""Load a trained language-detection model (representation + classifier) and predict.
+
+Each model folder contains metadata.json, the fitted text representation and
+the classifier, so Part 1 and Part 2 are loaded the same way:
+
+    models/language_detection/tfidf/      Part 1 - TF-IDF baseline
+    models/language_detection/fasttext/   Part 2 - FastText word embeddings
+"""
 
 from __future__ import annotations
 
@@ -9,7 +16,7 @@ from pathlib import Path
 import joblib
 import numpy as np
 
-from src.config import BEST_MODEL_PATH, METADATA_PATH, VECTORIZER_PATH
+from src.config import TFIDF_MODEL_DIR
 from src.preprocessing import clean_text
 
 # Long documents are truncated before vectorising; a few thousand characters
@@ -36,28 +43,40 @@ class LanguagePrediction:
     characters_used: int
 
 
+def _load_representation(metadata: dict, model_dir: Path):
+    kind = metadata.get("representation_type", "tfidf")
+    if kind == "tfidf":
+        return joblib.load(model_dir / "vectorizer.pkl")
+    raise ValueError(f"Unknown representation type '{kind}' in {model_dir}")
+
+
 class LanguageDetector:
     def __init__(self, vectorizer, model, metadata: dict):
-        self.vectorizer = vectorizer
+        self.vectorizer = vectorizer  # any fitted representation with .transform(texts)
         self.model = model
         self.metadata = metadata
 
     @classmethod
-    def load(
-        cls,
-        vectorizer_path: Path = VECTORIZER_PATH,
-        model_path: Path = BEST_MODEL_PATH,
-        metadata_path: Path = METADATA_PATH,
-    ) -> "LanguageDetector":
-        missing = [p for p in (vectorizer_path, model_path, metadata_path) if not Path(p).exists()]
-        if missing:
+    def load(cls, model_dir: Path = TFIDF_MODEL_DIR) -> "LanguageDetector":
+        model_dir = Path(model_dir)
+        metadata_path = model_dir / "metadata.json"
+        if not metadata_path.exists():
             raise ModelNotTrainedError(
-                "Language detection model not found: "
-                + ", ".join(str(p) for p in missing)
-                + "\nTrain it first: python training/train_language_detection.py"
+                f"Language detection model not found in {model_dir}\n"
+                f"Train it first: python training/train_language_detection_{model_dir.name}.py"
             )
-        metadata = json.loads(Path(metadata_path).read_text(encoding="utf-8"))
-        return cls(joblib.load(vectorizer_path), joblib.load(model_path), metadata)
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        files = [model_dir / f for f in metadata["representation_files"]]
+        files.append(model_dir / metadata["classifier_file"])
+        missing = [str(f) for f in files if not f.exists()]
+        if missing:
+            raise ModelNotTrainedError("Model files missing: " + ", ".join(missing))
+        vectorizer = _load_representation(metadata, model_dir)
+        return cls(vectorizer, joblib.load(model_dir / metadata["classifier_file"]), metadata)
+
+    @property
+    def representation_label(self) -> str:
+        return self.metadata.get("representation", self.metadata.get("representation_type", ""))
 
     @property
     def model_name(self) -> str:

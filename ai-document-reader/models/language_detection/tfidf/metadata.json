@@ -1,10 +1,11 @@
 {
   "task": "language_detection",
   "model_version": "part1-tfidf-baseline-v1",
-  "trained_at": "2026-10-02T10:25:35+00:00",
-  "representation": "TF-IDF (no word embeddings)",
+  "trained_at": "2026-10-02T11:02:33+00:00",
+  "representation_type": "tfidf",
+  "representation": "TF-IDF (sparse; no word embeddings)",
   "feature_config": "tfidf_char_wb_2-5gram",
-  "vectorizer_settings": {
+  "representation_settings": {
     "analyzer": "char_wb",
     "ngram_range": [
       2,
@@ -20,6 +21,10 @@
     "lowercase": false,
     "vocabulary_size": 99533
   },
+  "representation_files": [
+    "vectorizer.pkl"
+  ],
+  "classifier_file": "model.pkl",
   "selected_classifier": "LinearSVC (calibrated)",
   "probability_calibration": {
     "method": "sigmoid",
@@ -70,7 +75,12 @@
     "validation_rows": 4795,
     "test_rows": 5994,
     "train_csv": "data\\language_detection\\train.csv",
-    "test_csv": "data\\language_detection\\test.csv"
+    "test_csv": "data\\language_detection\\test.csv",
+    "split_fingerprint": {
+      "train": "9119e708d3ce726b",
+      "validation": "298416300f105cd3",
+      "test": "918d6f2a645d8230"
+    }
   },
   "preprocessing": {
     "mojibake_repair": "\u00e2\u20ac\u2122 -> '",

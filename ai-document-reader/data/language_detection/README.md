@@ -52,5 +52,5 @@ Languages.* LREC 2012.
 ## Option B — use your own data
 
 Place your own `train.csv` and `test.csv` (format above) in this folder.
-If either file is missing or invalid, `training/train_language_detection.py`
+If either file is missing or invalid, the training scripts (`training/train_language_detection_*.py`)
 stops with an explicit error message; it never invents data.

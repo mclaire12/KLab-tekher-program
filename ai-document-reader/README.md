@@ -266,31 +266,31 @@ python -m pip install transformers sentencepiece
 python training/prepare_dataset.py
 
 # 2. Train, compare and evaluate all TF-IDF configurations × classifiers
-python training/train_language_detection.py
+python training/train_language_detection_tfidf.py
 ```
 
 Takes about one minute on a laptop CPU. Options:
 
 ```bash
-python training/train_language_detection.py --configs tfidf_char_wb_2-5gram tfidf_word_1gram
-python training/train_language_detection.py --classifiers LogisticRegression LinearSVC
-python training/train_language_detection.py --val-size 0.2 --seed 42
+python training/train_language_detection_tfidf.py --configs tfidf_char_wb_2-5gram tfidf_word_1gram
+python training/train_language_detection_tfidf.py --classifiers LogisticRegression LinearSVC
+python training/train_language_detection_tfidf.py --seed 42
 ```
 
 **Outputs**
 
 | Path | Content |
 |---|---|
-| `models/language_detection/tfidf_vectorizer.pkl` | fitted TF-IDF vectorizer of the selected configuration |
-| `models/language_detection/best_model.pkl` | selected classifier |
-| `models/language_detection/metadata.json` | vectorizer settings, classifier + parameters, languages, metrics, preprocessing, training date, version, seed |
-| `models/language_detection/classifiers/*.pkl` | all four classifiers for the selected config (git-ignored; ~100 MB because of Random Forest) |
-| `results/language_detection_results.csv` | every config × classifier × split: accuracy, macro precision/recall/F1, weighted F1, 3-word F1, training time |
+| `models/language_detection/tfidf/vectorizer.pkl` | fitted TF-IDF vectorizer of the selected configuration |
+| `models/language_detection/tfidf/model.pkl` | selected classifier |
+| `models/language_detection/tfidf/metadata.json` | vectorizer settings, classifier + parameters, languages, metrics, preprocessing, training date, version, seed |
+| `models/language_detection/tfidf/classifiers/*.pkl` | all four classifiers for the selected config (git-ignored; ~100 MB because of Random Forest) |
+| `results/tfidf_results.csv` | every config × classifier × split: accuracy, macro precision/recall/F1, weighted F1, 3-word F1, training time |
 | `results/tfidf_config_comparison.csv` | best and mean validation F1 per TF-IDF config |
-| `results/short_text_robustness.csv` | test macro F1 on the first 1/2/3/5 words of every sentence |
-| `results/classification_report.txt` | per-class report + confusion matrix of the selected model |
-| `results/confusion_matrix.png`, `confusion_matrices_all_classifiers.png`, `model_comparison.png`, `short_text_robustness.png` | charts |
-| `results/training_log.txt` | full console output of the run reported below |
+| `results/tfidf_short_text_robustness.csv` | test macro F1 on the first 1/2/3/5 words of every sentence |
+| `results/tfidf_classification_report.txt` | per-class report + confusion matrix of the selected model |
+| `results/tfidf_confusion_matrix.png`, `tfidf_confusion_matrices_all_classifiers.png`, `tfidf_model_comparison.png`, `tfidf_short_text_robustness.png` | charts |
+| `results/tfidf_training_log.txt` | full console output of the run reported below |
 
 ## 11. Running the application
 
@@ -324,7 +324,7 @@ describe how often the model was right on the **held-out test set**.
 
 ## 13. Actual results
 
-All numbers below were produced by `python training/train_language_detection.py`
+All numbers below were produced by `python training/train_language_detection_tfidf.py`
 on 2026-10-02 (seed 42) and are copied from the files in `results/`. Re-running
 the script reproduces them; small differences in training *time* are expected.
 
@@ -372,7 +372,7 @@ calibrated LinearSVC both reach accuracy and macro F1 = 0.9997.
    macro avg     0.9997    0.9997    0.9997      5994
 ```
 
-![Confusion matrix](results/confusion_matrix.png)
+![Confusion matrix](results/tfidf_confusion_matrix.png)
 
 Only **2 of 5,994** test sentences were misclassified, and both are instructive:
 
@@ -387,10 +387,10 @@ On **full sentences** every configuration is above 0.996 macro F1 — telling
 these three languages apart from a complete sentence is easy for any reasonable
 representation. The differences appear on **short text**:
 
-![Model comparison](results/model_comparison.png)
+![Model comparison](results/tfidf_model_comparison.png)
 
 Test macro F1 (LinearSVC) when the model only sees the **first N words** of
-each test sentence (`results/short_text_robustness.csv`):
+each test sentence (`results/tfidf_short_text_robustness.csv`):
 
 | TF-IDF config | 1 word | 2 words | 3 words | 5 words |
 |---|---:|---:|---:|---:|
@@ -399,7 +399,7 @@ each test sentence (`results/short_text_robustness.csv`):
 | char_wb 1–3-gram | 0.8849 | 0.9460 | 0.9727 | 0.9922 |
 | **char_wb 2–5-gram** | **0.9055** | **0.9589** | **0.9797** | **0.9945** |
 
-![Short-text robustness](results/short_text_robustness.png)
+![Short-text robustness](results/tfidf_short_text_robustness.png)
 
 **Conclusion.** Character n-grams perform better, especially on short inputs:
 with a single word, char 2–5-grams reach 0.906 macro F1 vs. 0.824 for word
@@ -429,7 +429,7 @@ Evaluation charts for the presentation are in `results/` (see §13).
 
 | Task | Model / method | Trained by us? |
 |---|---|---|
-| **Language detection (main ML task)** | TF-IDF char_wb 2–5-grams + **LinearSVC** (calibrated) | ✅ **yes** — `training/train_language_detection.py` |
+| **Language detection (main ML task)** | TF-IDF char_wb 2–5-grams + **LinearSVC** (calibrated) | ✅ **yes** — `training/train_language_detection_tfidf.py` |
 | Extractive summary | frequency-based sentence scoring (no ML model) | — rule-based |
 | Abstractive summary (English only, optional) | pretrained `sshleifer/distilbart-cnn-12-6` | ❌ no, pretrained |
 | Question answering — contact details & fields | patterns for phone / e-mail / link, owner's name, address, `Label: value` lines | — rule-based |
@@ -522,10 +522,10 @@ Planned approach:
 1. Add embedding representations to the registry in
    `src/language_detection/features.py` (e.g. averaged word vectors), using the
    same `fit` / `transform` interface as `TfidfVectorizer`.
-2. Re-run `training/train_language_detection.py` with the **same dataset, split,
+2. Re-run `training/train_language_detection_tfidf.py` with the **same dataset, split,
    seed, classifiers and metrics**, so only the representation changes.
 3. Compare TF-IDF vs. embeddings on full sentences **and** on the short-text
-   benchmark (`results/short_text_robustness.csv`), where the baseline still has
+   benchmark (`results/tfidf_short_text_robustness.csv`), where the baseline still has
    room to improve (0.906 macro F1 on single words).
 4. Optionally use embeddings for semantic retrieval in the Ask AI tab, so that
    questions using synonyms can still find the right passage.

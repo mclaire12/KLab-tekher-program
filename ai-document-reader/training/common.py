@@ -1,33 +1,31 @@
-"""Train and compare TF-IDF + traditional classifiers for language detection.
+"""Shared experiment pipeline for Part 1 (TF-IDF) and Part 2 (FastText).
 
-Pipeline:
-    load CSVs -> validate -> clean text -> split train/validation (stratified)
-    -> for each TF-IDF configuration: fit vectorizer on the training split
-       -> for each classifier: fit, evaluate on validation AND held-out test
-    -> select best (feature config, classifier) by VALIDATION macro F1
-       (ties broken by validation macro F1 on 3-word snippets, then training time)
-    -> short-text robustness: evaluate on test sentences truncated to 1/2/3/5 words
-    -> if the selected classifier has no probabilities (e.g. LinearSVC), wrap it in
-       CalibratedClassifierCV (sigmoid, 5-fold, training split only) so the app can
-       show a confidence; the deployed model is re-evaluated on the test set
-    -> save vectorizer, best model, metadata, results, confusion matrices
+Both training scripts call `run_experiment`, so everything except the text
+representation is IDENTICAL between the two parts:
 
-The test set (test.csv) is never used for model selection; it only reports
-how the selected model generalises.
+    same CSVs -> same cleaning -> same stratified train/validation split (seed 42)
+    -> same 4 classifiers with the same settings -> same metrics
+    -> same model-selection rule -> same short-text robustness test
+    -> same probability calibration for the deployed model
 
-Usage:
-    python training/train_language_detection.py
-    python training/train_language_detection.py --configs tfidf_char_wb_1-3gram --classifiers LogisticRegression
+A "representation" is any object with scikit-learn's interface:
+    fit(texts) -> self,  transform(texts) -> feature matrix
+(TfidfVectorizer for Part 1, FastTextDocumentVectorizer for Part 2.)
+
+The test set (test.csv) is never used for model selection.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 import joblib
 import matplotlib
@@ -49,23 +47,21 @@ from sklearn.model_selection import train_test_split  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.config import (  # noqa: E402
-    BEST_MODEL_PATH, LABEL_COLUMN, LANGUAGES, METADATA_PATH, MODEL_DIR,
-    RANDOM_SEED, RESULTS_DIR, TEST_CSV, TEXT_COLUMN, TRAIN_CSV, VECTORIZER_PATH,
+    LABEL_COLUMN, LANGUAGES, RANDOM_SEED, RESULTS_DIR, TEST_CSV, TEXT_COLUMN, TRAIN_CSV,
 )
-from src.language_detection import (  # noqa: E402
-    FEATURE_CONFIGS, build_classifiers, build_vectorizer, describe_vectorizer,
-)
+from src.language_detection import build_classifiers  # noqa: E402
 from src.preprocessing import PREPROCESSING_DESCRIPTION, clean_text  # noqa: E402
 
-MODEL_VERSION = "part1-tfidf-baseline-v1"
 MIN_SAMPLES_PER_CLASS = 10
+VAL_SIZE = 0.2
 TIE_BREAK_WORDS = 3
 SHORT_TEXT_WORDS = (1, 2, 3, 5)
+METRIC_KEYS = ["accuracy", "precision_macro", "recall_macro", "f1_macro"]
 
-# Chart styling (validated reference palette; see README "Evaluation")
+# Chart styling (validated reference palette)
 SURFACE, INK, INK_2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
 BLUE_RAMP = ["#fcfcfb", "#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"]
-SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]  # categorical slots 1-4
+SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300"]  # categorical slots 1-6
 
 
 class DatasetError(Exception):
@@ -109,6 +105,42 @@ def load_dataset(path: Path, name: str) -> pd.DataFrame:
     return df
 
 
+@dataclass
+class Splits:
+    train: pd.DataFrame
+    val: pd.DataFrame
+    test: pd.DataFrame
+    fingerprint: dict = field(default_factory=dict)
+
+
+def _fingerprint(df: pd.DataFrame) -> str:
+    """Short hash of the exact rows (index + text + label) in a split."""
+    payload = "\n".join(f"{i}\t{t}\t{l}" for i, t, l in zip(df.index, df[TEXT_COLUMN], df[LABEL_COLUMN]))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+def load_splits(seed: int = RANDOM_SEED, val_size: float = VAL_SIZE) -> Splits:
+    """Same data and same stratified split for every representation."""
+    print("1) Loading and validating dataset")
+    try:
+        train_full = load_dataset(TRAIN_CSV, "train")
+        test = load_dataset(TEST_CSV, "test")
+    except DatasetError as exc:
+        sys.exit(f"\nERROR: {exc}")
+
+    overlap = set(train_full["clean"]) & set(test["clean"])
+    if overlap:
+        print(f"  WARNING: {len(overlap)} texts appear in both train and test (possible leakage)")
+
+    print(f"2) Stratified split of train.csv -> train / validation ({1 - val_size:.0%}/{val_size:.0%}), seed={seed}")
+    train, val = train_test_split(
+        train_full, test_size=val_size, stratify=train_full[LABEL_COLUMN], random_state=seed
+    )
+    fingerprint = {"train": _fingerprint(train), "validation": _fingerprint(val), "test": _fingerprint(test)}
+    print(f"  train={len(train)}  validation={len(val)}  test={len(test)}  split fingerprint={fingerprint}")
+    return Splits(train, val, test, fingerprint)
+
+
 # -------------------------------------------------------------- metrics ----
 def compute_metrics(y_true, y_pred) -> dict:
     precision, recall, f1, _ = precision_recall_fscore_support(
@@ -132,26 +164,18 @@ def first_words(texts: pd.Series, n: int) -> pd.Series:
 
 
 # --------------------------------------------------------------- charts ----
-def _style_axes(ax):
+def style_axes(ax):
     ax.set_facecolor(SURFACE)
     for spine in ax.spines.values():
         spine.set_visible(False)
     ax.tick_params(colors=INK_2, length=0)
 
 
-def plot_confusion_matrix(cm: np.ndarray, title: str, path: Path) -> None:
-    fig, ax = plt.subplots(figsize=(6.2, 5.2), facecolor=SURFACE)
-    _draw_cm(ax, cm, title)
-    fig.tight_layout()
-    fig.savefig(path, dpi=160, facecolor=SURFACE)
-    plt.close(fig)
-
-
-def _draw_cm(ax, cm: np.ndarray, title: str, show_ylabel: bool = True) -> None:
+def draw_confusion_matrix(ax, cm: np.ndarray, title: str, show_ylabel: bool = True) -> None:
     cmap = LinearSegmentedColormap.from_list("blue_seq", BLUE_RAMP)
     row_pct = cm / cm.sum(axis=1, keepdims=True).clip(min=1)
     ax.imshow(row_pct, cmap=cmap, vmin=0, vmax=1)
-    _style_axes(ax)
+    style_axes(ax)
     n = len(LANGUAGES)
     ax.set_xticks(range(n), [l.capitalize() for l in LANGUAGES], color=INK)
     ax.set_yticks(range(n), [l.capitalize() for l in LANGUAGES], color=INK)
@@ -171,28 +195,42 @@ def _draw_cm(ax, cm: np.ndarray, title: str, show_ylabel: bool = True) -> None:
                     fontsize=9, color="#ffffff" if dark_cell else INK)
 
 
+def plot_confusion_matrix(cm: np.ndarray, title: str, path: Path) -> None:
+    fig, ax = plt.subplots(figsize=(6.2, 5.2), facecolor=SURFACE)
+    draw_confusion_matrix(ax, cm, title)
+    fig.tight_layout()
+    fig.savefig(path, dpi=160, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def plot_all_confusion_matrices(cms: dict[str, np.ndarray], config: str, path: Path) -> None:
     fig, axes = plt.subplots(1, len(cms), figsize=(4.6 * len(cms), 4.6), facecolor=SURFACE)
     for k, (ax, (name, cm)) in enumerate(zip(np.atleast_1d(axes), cms.items())):
-        _draw_cm(ax, cm, name, show_ylabel=(k == 0))
+        draw_confusion_matrix(ax, cm, name, show_ylabel=(k == 0))
     fig.suptitle(f"Test-set confusion matrices - {config} (counts and row %)", color=INK, x=0.01, ha="left")
     fig.tight_layout()
     fig.savefig(path, dpi=140, facecolor=SURFACE)
     plt.close(fig)
 
 
-def _legend_above(fig, ax, labels_colors):
+def legend_above(fig, labels_colors, y: float = 0.93):
     from matplotlib.patches import Patch
     handles = [Patch(facecolor=c, edgecolor="none", label=l) for l, c in labels_colors]
     legend = fig.legend(handles=handles, frameon=False, ncol=len(handles), loc="upper left",
-                        bbox_to_anchor=(0.01, 0.93))
+                        bbox_to_anchor=(0.01, y))
     for text in legend.get_texts():
         text.set_color(INK)
 
 
-def plot_model_comparison(results: pd.DataFrame, path: Path, tie_col: str) -> None:
+def short_label(config: str) -> str:
+    for prefix in ("tfidf_", "fasttext_"):
+        config = config.removeprefix(prefix)
+    return config.replace("_", " ")
+
+
+def plot_model_comparison(results: pd.DataFrame, path: Path, tie_col: str, family_label: str) -> None:
     """Two panels on one shared y-scale: validation macro F1 on full sentences
-    and on short snippets. One bar per classifier, grouped by TF-IDF config."""
+    and on short snippets. One bar per classifier, grouped by configuration."""
     val = results[results["split"] == "validation"]
     configs = list(dict.fromkeys(val["features"]))
     classifiers = list(dict.fromkeys(val["classifier"]))
@@ -200,43 +238,40 @@ def plot_model_comparison(results: pd.DataFrame, path: Path, tie_col: str) -> No
     lo = max(0.0, np.floor(min(val["f1_macro"].min(), val[tie_col].min()) * 20) / 20)
     panels = [("f1_macro", "Full sentences"), (tie_col, f"First {TIE_BREAK_WORDS} words only")]
 
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5), facecolor=SURFACE, sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(max(13, 2.6 * len(configs) * 2), 5), facecolor=SURFACE, sharey=True)
     for ax, (col, subtitle) in zip(axes, panels):
-        _style_axes(ax)
+        style_axes(ax)
         for k, clf in enumerate(classifiers):
             sub = val[val["classifier"] == clf].set_index("features").reindex(configs)
             x = np.arange(len(configs)) + (k - (len(classifiers) - 1) / 2) * width
             ax.bar(x, sub[col] - lo, bottom=lo, width=width - 0.02, color=SERIES[k % len(SERIES)])
-        ax.set_xticks(range(len(configs)), [c.replace("tfidf_", "").replace("_", " ") for c in configs],
-                      color=INK)
+        ax.set_xticks(range(len(configs)), [short_label(c) for c in configs], color=INK,
+                      fontsize=9 if len(configs) > 4 else 10)
         ax.set_ylim(lo, 1.0)
         ax.yaxis.grid(True, color=GRID, linewidth=0.8)
         ax.set_axisbelow(True)
         ax.set_title(subtitle, color=INK, fontsize=10, loc="left")
     axes[0].set_ylabel(f"Validation macro F1 (axis starts at {lo:.2f})", color=INK_2)
-    fig.suptitle("Classifier comparison by TF-IDF representation", color=INK, fontsize=12, x=0.01, ha="left")
-    _legend_above(fig, axes[0], list(zip(classifiers, SERIES)))
+    fig.suptitle(f"Classifier comparison by {family_label} representation", color=INK, fontsize=12,
+                 x=0.01, ha="left")
+    legend_above(fig, list(zip(classifiers, SERIES)))
     fig.tight_layout(rect=(0, 0, 1, 0.86))
     fig.savefig(path, dpi=160, facecolor=SURFACE)
     plt.close(fig)
 
 
-def plot_short_text_robustness(short: pd.DataFrame, classifier: str, path: Path) -> None:
-    """Test macro F1 vs. number of words, one line per TF-IDF config (fixed classifier)."""
-    sub = short[short["classifier"] == classifier]
-    configs = list(dict.fromkeys(sub["features"]))
+def plot_lines(series: dict[str, pd.Series], path: Path, title: str, ylabel: str) -> None:
+    """Macro F1 vs. number of words; one line per series, direct labels on the left."""
     fig, ax = plt.subplots(figsize=(8.5, 4.8), facecolor=SURFACE)
-    _style_axes(ax)
+    style_axes(ax)
     starts = []
-    for k, config in enumerate(configs):
-        line = sub[sub["features"] == config].sort_values("words")
-        color = SERIES[k % len(SERIES)]
-        ax.plot(line["words"], line["f1_macro"], color=color, linewidth=2, marker="o", markersize=7,
-                markeredgecolor=SURFACE, markeredgewidth=2, label=config.replace("tfidf_", ""))
-        starts.append([line.iloc[0]["f1_macro"], line.iloc[0]["words"], config.replace("tfidf_", "")])
-    # Direct labels left of the first point (where the lines are most spread),
-    # nudged downward so they never overlap.
-    gap = max((sub["f1_macro"].max() - sub["f1_macro"].min()) * 0.06, 1e-3)
+    for k, (label, s) in enumerate(series.items()):
+        s = s.sort_index()
+        ax.plot(s.index, s.values, color=SERIES[k % len(SERIES)], linewidth=2, marker="o", markersize=7,
+                markeredgecolor=SURFACE, markeredgewidth=2, label=label)
+        starts.append([s.iloc[0], s.index[0], label])
+    values = pd.concat(series.values())
+    gap = max((values.max() - values.min()) * 0.06, 1e-3)
     starts.sort(reverse=True)
     for i in range(1, len(starts)):
         starts[i][0] = min(starts[i][0], starts[i - 1][0] - gap)
@@ -246,53 +281,60 @@ def plot_short_text_robustness(short: pd.DataFrame, classifier: str, path: Path)
     legend = ax.legend(frameon=False, loc="lower right")
     for text in legend.get_texts():
         text.set_color(INK)
-    words = sorted(sub["words"].unique())
+    words = sorted(values.index.unique())
     ax.set_xticks(words, [str(w) for w in words], color=INK)
-    ax.set_xlim(min(words) - 1.4, max(words) + 0.3)
+    ax.set_xlim(min(words) - 1.6, max(words) + 0.3)
     ax.set_xlabel("Words of each test sentence given to the model", color=INK_2)
-    ax.set_ylabel("Test macro F1", color=INK_2)
+    ax.set_ylabel(ylabel, color=INK_2)
     ax.yaxis.grid(True, color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)
-    ax.set_title(f"Short-text robustness - {classifier}", color=INK, fontsize=11, loc="left")
+    ax.set_title(title, color=INK, fontsize=11, loc="left")
     fig.tight_layout()
     fig.savefig(path, dpi=160, facecolor=SURFACE)
     plt.close(fig)
 
 
-# ----------------------------------------------------------------- main ----
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--configs", nargs="+", default=list(FEATURE_CONFIGS), choices=list(FEATURE_CONFIGS))
+# ----------------------------------------------------------- experiment ----
+@dataclass
+class Family:
+    """Everything that differs between Part 1 and Part 2."""
+    key: str                      # "tfidf" | "fasttext" - prefix of result files
+    label: str                    # "TF-IDF" | "FastText"
+    representation: str           # human description stored in metadata
+    configs: dict[str, dict]      # config name -> settings (printed / documented)
+    build: Callable[[str], object]            # config name -> unfitted representation
+    describe: Callable[[object], dict]        # fitted representation -> JSON-able dict
+    save: Callable[[object, Path], list[str]]  # save fitted representation, return file names
+    model_dir: Path
+    classifier_file: str          # "model.pkl" / "classifier.pkl"
+    model_version: str
+    extra_metadata: dict = field(default_factory=dict)
+
+
+def parse_args(family: Family, argv=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=f"Train {family.label} language-detection models")
+    parser.add_argument("--configs", nargs="+", default=list(family.configs), choices=list(family.configs))
     parser.add_argument("--classifiers", nargs="+", default=list(build_classifiers()))
-    parser.add_argument("--val-size", type=float, default=0.2, help="fraction of train.csv used for validation")
     parser.add_argument("--seed", type=int, default=RANDOM_SEED)
-    args = parser.parse_args()
+    return parser.parse_args(argv)
 
-    print("1) Loading and validating dataset")
-    try:
-        train_full = load_dataset(TRAIN_CSV, "train")
-        test = load_dataset(TEST_CSV, "test")
-    except DatasetError as exc:
-        sys.exit(f"\nERROR: {exc}")
 
-    overlap = set(train_full["clean"]) & set(test["clean"])
-    if overlap:
-        print(f"  WARNING: {len(overlap)} texts appear in both train and test (possible leakage)")
-
-    print(f"2) Stratified split of train.csv -> train / validation ({1 - args.val_size:.0%}/{args.val_size:.0%}), seed={args.seed}")
-    train, val = train_test_split(
-        train_full, test_size=args.val_size, stratify=train_full[LABEL_COLUMN], random_state=args.seed
-    )
-    print(f"  train={len(train)}  validation={len(val)}  test={len(test)}")
+def run_experiment(family: Family, argv=None) -> None:
+    args = parse_args(family, argv)
+    data = load_splits(args.seed)
+    train, val, test = data.train, data.val, data.test
 
     val_short = first_words(val["clean"], TIE_BREAK_WORDS)
+    tie_col = f"f1_macro_{TIE_BREAK_WORDS}words"
     rows, short_rows, fitted = [], [], {}
     for config in args.configs:
-        print(f"\n3) TF-IDF: {config}  {FEATURE_CONFIGS[config]}")
-        vectorizer = build_vectorizer(config)
-        X_train = vectorizer.fit_transform(train["clean"])  # fit on training split ONLY
-        X_val, X_test = vectorizer.transform(val["clean"]), vectorizer.transform(test["clean"])
-        print(f"   vocabulary size: {len(vectorizer.vocabulary_)}")
+        print(f"\n3) {family.label}: {config}  {family.configs[config]}")
+        start = time.perf_counter()
+        rep = family.build(config)
+        X_train = rep.fit_transform(train["clean"])  # fitted on the training split ONLY
+        rep_seconds = time.perf_counter() - start
+        X_val, X_test = rep.transform(val["clean"]), rep.transform(test["clean"])
+        print(f"   representation: {family.describe(rep)}  ({rep_seconds:.1f}s)")
 
         all_classifiers = build_classifiers(args.seed)
         for name in args.classifiers:
@@ -305,30 +347,30 @@ def main() -> None:
 
             for split, X, y in (("validation", X_val, val[LABEL_COLUMN]), ("test", X_test, test[LABEL_COLUMN])):
                 y_pred = model.predict(X)
-                metrics = compute_metrics(y, y_pred)
-                rows.append({"features": config, "classifier": name, "split": split, **metrics,
-                             "train_seconds": train_seconds})
+                rows.append({"features": config, "classifier": name, "split": split,
+                             **compute_metrics(y, y_pred), "train_seconds": train_seconds,
+                             "representation_seconds": rep_seconds})
                 if split == "validation":
-                    short_pred = model.predict(vectorizer.transform(val_short))
-                    rows[-1][f"f1_macro_{TIE_BREAK_WORDS}words"] = compute_metrics(val[LABEL_COLUMN], short_pred)["f1_macro"]
+                    short_pred = model.predict(rep.transform(val_short))
+                    rows[-1][tie_col] = compute_metrics(val[LABEL_COLUMN], short_pred)["f1_macro"]
                 else:
-                    fitted[(config, name)] = (vectorizer, model, y_pred)
+                    fitted[(config, name)] = (rep, model, y_pred)
             for n in SHORT_TEXT_WORDS:
-                pred = model.predict(vectorizer.transform(first_words(test["clean"], n)))
+                pred = model.predict(rep.transform(first_words(test["clean"], n)))
                 m = compute_metrics(test[LABEL_COLUMN], pred)
                 short_rows.append({"features": config, "classifier": name, "words": n,
                                    "accuracy": m["accuracy"], "f1_macro": m["f1_macro"]})
             v = rows[-2]
             print(f"   {name:<20} val acc={v['accuracy']:.4f}  val macro-F1={v['f1_macro']:.4f}  "
-                  f"{TIE_BREAK_WORDS}-word val F1={v[f'f1_macro_{TIE_BREAK_WORDS}words']:.4f}  ({train_seconds:.1f}s)")
+                  f"{TIE_BREAK_WORDS}-word val F1={v[tie_col]:.4f}  ({train_seconds:.1f}s)")
 
     results = pd.DataFrame(rows)
+    results.insert(0, "representation", family.label)
     val_results = results[results["split"] == "validation"]
-    tie_col = f"f1_macro_{TIE_BREAK_WORDS}words"
     best = val_results.sort_values(["f1_macro", tie_col, "train_seconds"],
                                    ascending=[False, False, True]).iloc[0]
     best_config, best_name = best["features"], best["classifier"]
-    best_vectorizer, best_model, best_test_pred = fitted[(best_config, best_name)]
+    best_rep, best_model, best_test_pred = fitted[(best_config, best_name)]
     test_metrics = results[(results["split"] == "test") & (results["features"] == best_config)
                            & (results["classifier"] == best_name)].iloc[0]
 
@@ -342,8 +384,8 @@ def main() -> None:
         print(f"\n   {best_name} has no predict_proba -> calibrating probabilities "
               "(CalibratedClassifierCV, sigmoid, 5-fold CV on the training split)")
         deployed_model = CalibratedClassifierCV(clone(best_model), method="sigmoid", cv=5)
-        deployed_model.fit(best_vectorizer.transform(train["clean"]), train[LABEL_COLUMN])
-        deployed_pred = deployed_model.predict(best_vectorizer.transform(test["clean"]))
+        deployed_model.fit(best_rep.transform(train["clean"]), train[LABEL_COLUMN])
+        deployed_pred = deployed_model.predict(best_rep.transform(test["clean"]))
         calibration = {"method": "sigmoid", "cv": 5, "fitted_on": "training split only"}
     deployed_metrics = compute_metrics(test[LABEL_COLUMN], deployed_pred)
     deployed_name = best_name + (" (calibrated)" if calibration else "")
@@ -352,12 +394,13 @@ def main() -> None:
 
     # ---------------------------------------------------------- save ----
     print("\n5) Saving models and results")
-    MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    model_dir = family.model_dir
+    model_dir.mkdir(parents=True, exist_ok=True)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    joblib.dump(best_vectorizer, VECTORIZER_PATH)
-    joblib.dump(deployed_model, BEST_MODEL_PATH)
+    rep_files = family.save(best_rep, model_dir)
+    joblib.dump(deployed_model, model_dir / family.classifier_file)
 
-    clf_dir = MODEL_DIR / "classifiers"
+    clf_dir = model_dir / "classifiers"
     clf_dir.mkdir(exist_ok=True)
     for (config, name), (_, model, _) in fitted.items():
         if config == best_config:
@@ -365,14 +408,16 @@ def main() -> None:
 
     report = classification_report(test[LABEL_COLUMN], deployed_pred, labels=LANGUAGES, digits=4)
     cm = confusion_matrix(test[LABEL_COLUMN], deployed_pred, labels=LANGUAGES)
-
     metadata = {
         "task": "language_detection",
-        "model_version": MODEL_VERSION,
+        "model_version": family.model_version,
         "trained_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "representation": "TF-IDF (no word embeddings)",
+        "representation_type": family.key,
+        "representation": family.representation,
         "feature_config": best_config,
-        "vectorizer_settings": describe_vectorizer(best_vectorizer),
+        "representation_settings": family.describe(best_rep),
+        "representation_files": rep_files,
+        "classifier_file": family.classifier_file,
         "selected_classifier": deployed_name,
         "probability_calibration": calibration,
         "classifier_params": {k: (v if isinstance(v, (int, float, str, bool, type(None))) else str(v))
@@ -380,40 +425,49 @@ def main() -> None:
         "supports_probabilities": hasattr(deployed_model, "predict_proba"),
         "supported_languages": LANGUAGES,
         "selection_metric": f"validation macro F1 (tie-break: validation macro F1 on {TIE_BREAK_WORDS}-word snippets, then training time)",
-        "validation_metrics": {k: float(best[k]) for k in ["accuracy", "precision_macro", "recall_macro", "f1_macro"]},
-        "test_metrics": {k: float(deployed_metrics[k]) for k in ["accuracy", "precision_macro", "recall_macro", "f1_macro"]},
-        "test_metrics_before_calibration": {k: float(test_metrics[k]) for k in ["accuracy", "precision_macro", "recall_macro", "f1_macro"]},
+        "validation_metrics": {k: float(best[k]) for k in METRIC_KEYS},
+        "test_metrics": {k: float(deployed_metrics[k]) for k in METRIC_KEYS},
+        "test_metrics_before_calibration": {k: float(test_metrics[k]) for k in METRIC_KEYS},
         "dataset": {"train_rows": len(train), "validation_rows": len(val), "test_rows": len(test),
                     "train_csv": str(TRAIN_CSV.relative_to(TRAIN_CSV.parents[2])),
-                    "test_csv": str(TEST_CSV.relative_to(TEST_CSV.parents[2]))},
+                    "test_csv": str(TEST_CSV.relative_to(TEST_CSV.parents[2])),
+                    "split_fingerprint": data.fingerprint},
         "preprocessing": PREPROCESSING_DESCRIPTION,
         "random_seed": args.seed,
         "scikit_learn_version": sklearn.__version__,
+        **family.extra_metadata,
     }
-    METADATA_PATH.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    (model_dir / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
-    results.round(6).to_csv(RESULTS_DIR / "language_detection_results.csv", index=False)
+    k = family.key
+    results.round(6).to_csv(RESULTS_DIR / f"{k}_results.csv", index=False)
     short = pd.DataFrame(short_rows)
-    short.round(6).to_csv(RESULTS_DIR / "short_text_robustness.csv", index=False)
+    short.insert(0, "representation", family.label)
+    short.round(6).to_csv(RESULTS_DIR / f"{k}_short_text_robustness.csv", index=False)
     (val_results.groupby("features")["f1_macro"].agg(["max", "mean"])
      .rename(columns={"max": "best_val_f1_macro", "mean": "mean_val_f1_macro"})
-     .reindex(args.configs).round(6).to_csv(RESULTS_DIR / "tfidf_config_comparison.csv"))
-    (RESULTS_DIR / "classification_report.txt").write_text(
+     .reindex(args.configs).round(6).to_csv(RESULTS_DIR / f"{k}_config_comparison.csv"))
+    (RESULTS_DIR / f"{k}_classification_report.txt").write_text(
         f"Deployed model: {deployed_name} + {best_config}\nEvaluated on held-out test set ({len(test)} rows)\n\n"
         f"{report}\nConfusion matrix (rows=true, cols=predicted, order={LANGUAGES}):\n{cm}\n",
         encoding="utf-8",
     )
-    plot_confusion_matrix(cm, f"{deployed_name} + {best_config} - held-out test set", RESULTS_DIR / "confusion_matrix.png")
+    plot_confusion_matrix(cm, f"{deployed_name} + {best_config} - held-out test set",
+                          RESULTS_DIR / f"{k}_confusion_matrix.png")
     plot_all_confusion_matrices(
         {name: confusion_matrix(test[LABEL_COLUMN], pred, labels=LANGUAGES)
          for (config, name), (_, _, pred) in fitted.items() if config == best_config},
-        best_config, RESULTS_DIR / "confusion_matrices_all_classifiers.png",
+        best_config, RESULTS_DIR / f"{k}_confusion_matrices_all_classifiers.png",
     )
     if len(args.configs) * len(args.classifiers) > 1:
-        plot_model_comparison(results, RESULTS_DIR / "model_comparison.png", tie_col)
-    plot_short_text_robustness(short, best_name, RESULTS_DIR / "short_text_robustness.png")
+        plot_model_comparison(results, RESULTS_DIR / f"{k}_model_comparison.png", tie_col, family.label)
+    sub = short[short["classifier"] == best_name]
+    plot_lines({short_label(c): sub[sub["features"] == c].set_index("words")["f1_macro"]
+                for c in dict.fromkeys(sub["features"])},
+               RESULTS_DIR / f"{k}_short_text_robustness.png",
+               f"Short-text robustness - {family.label} + {best_name}", "Test macro F1")
 
-    print(f"   {VECTORIZER_PATH}\n   {BEST_MODEL_PATH}\n   {METADATA_PATH}\n   {RESULTS_DIR}")
+    print(f"   {model_dir}\n   {RESULTS_DIR}")
     print("\n6) Results (macro-averaged; sorted by validation F1)")
     table = results.pivot_table(index=["features", "classifier"], columns="split",
                                 values=["accuracy", "f1_macro"]).round(4)
@@ -423,7 +477,3 @@ def main() -> None:
     print(short.pivot_table(index=["features", "classifier"], columns="words", values="f1_macro").round(4).to_string())
     print(f"\nClassification report - deployed model ({deployed_name}) on held-out test set:\n{report}")
     print(f"Confusion matrix (rows=true {LANGUAGES}):\n{cm}")
-
-
-if __name__ == "__main__":
-    main()

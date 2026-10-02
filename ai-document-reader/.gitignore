@@ -9,7 +9,7 @@ venv/
 data/language_detection/raw/
 
 # Per-classifier models can be large (e.g. Random Forest); re-create by training
-models/language_detection/classifiers/
+models/language_detection/*/classifiers/
 
 # Streamlit / OS
 .streamlit/secrets.toml

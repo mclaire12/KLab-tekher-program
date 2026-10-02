@@ -9,9 +9,8 @@ TRAIN_CSV = DATA_DIR / "train.csv"
 TEST_CSV = DATA_DIR / "test.csv"
 
 MODEL_DIR = PROJECT_ROOT / "models" / "language_detection"
-VECTORIZER_PATH = MODEL_DIR / "tfidf_vectorizer.pkl"
-BEST_MODEL_PATH = MODEL_DIR / "best_model.pkl"
-METADATA_PATH = MODEL_DIR / "metadata.json"
+TFIDF_MODEL_DIR = MODEL_DIR / "tfidf"        # Part 1 - TF-IDF baseline
+FASTTEXT_MODEL_DIR = MODEL_DIR / "fasttext"  # Part 2 - FastText word embeddings
 
 RESULTS_DIR = PROJECT_ROOT / "results"
 
