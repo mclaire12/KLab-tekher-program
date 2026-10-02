@@ -88,7 +88,7 @@ machine-learning baseline that can later be compared with word embeddings.
 | Tab | What it does | Technique |
 |---|---|---|
 | **Upload / Document Information** | filename, type, size, pages (PDF), detected language, confidence | PyMuPDF, python-docx, trained TF-IDF model |
-| **📄 Document** | extracted text, language prediction, model used, per-language probabilities, confidence explanation, preprocessing statistics | trained TF-IDF + LinearSVC (calibrated) |
+| **📄 Document** | full extracted text | PyMuPDF, python-docx |
 | **📝 Summary** | extractive summary (any language) or abstractive summary (English) | frequency-based sentence scoring / pretrained `sshleifer/distilbart-cnn-12-6` |
 | **💬 Ask AI** | answers questions with a sentence from the document and **always shows the source passage** | TF-IDF retrieval + cosine similarity |
 | **🔊 Read** | reads the document, the summary or custom text aloud at 0.75x–1.5x speed | gTTS, pyttsx3, pretrained `facebook/mms-tts-kin` |

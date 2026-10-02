@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import html
 
-import pandas as pd
 import streamlit as st
 
 from src.extraction import SUPPORTED_TYPES, UnsupportedFileTypeError, extract_text
@@ -122,7 +121,7 @@ with st.status("Processing document...", expanded=False) as status:
             st.warning(warning)
         st.stop()
 
-    cleaned, tokens, stats = preprocess(doc.text)
+    _, _, stats = preprocess(doc.text)
     st.write(f"Text cleaned and tokenized: {stats.tokens:,} tokens")
     prediction = detector.predict(doc.text)
     language = prediction.language
@@ -148,34 +147,8 @@ tab_doc, tab_sum, tab_qa, tab_read = st.tabs(["📄 Document", "📝 Summary", "
 
 # ----------------------------------------------------------- Document ----
 with tab_doc:
-    st.text_area("Extracted text", doc.text, height=380)
+    st.text_area("Extracted text", doc.text, height=480)
 
-    left, right = st.columns(2)
-    with left:
-        st.markdown("**Language detection**")
-        st.markdown(
-            f"Detected language: **{language.capitalize()}**  \n"
-            f"Model: TF-IDF ({detector.metadata['feature_config']}) + {prediction.model_name}  \n"
-            f"Characters analysed: {prediction.characters_used:,}"
-        )
-        if prediction.probabilities:
-            probs = pd.Series(prediction.probabilities).rename(index=str.capitalize)
-            st.dataframe(probs.to_frame("probability").style.format("{:.1%}"), width="stretch")
-        with st.expander("What does confidence mean?"):
-            st.markdown(
-                "**Confidence** is the probability the model gives to the predicted language "
-                "for *this document*. It is **not** the model's accuracy: accuracy is measured "
-                "once, on a held-out test set, during training. A high confidence does not "
-                "guarantee a correct answer, and the model can only choose between English, "
-                "French and Kinyarwanda."
-            )
-    with right:
-        st.markdown("**Preprocessing statistics**")
-        st.dataframe(pd.DataFrame(
-            {"value": [stats.original_characters, stats.cleaned_characters, stats.removed_characters,
-                       stats.tokens, stats.unique_tokens]},
-            index=["Original characters", "Cleaned characters", "Removed characters",
-                   "Tokens", "Unique tokens"]), width="stretch")
 
 # ------------------------------------------------------------ Summary ----
 with tab_sum:
