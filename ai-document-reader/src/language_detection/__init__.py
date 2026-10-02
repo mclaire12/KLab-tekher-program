@@ -1,8 +1,12 @@
 from .classifiers import build_classifiers
 from .detector import LanguageDetector, LanguagePrediction, ModelNotTrainedError
+from .embeddings import FASTTEXT_CONFIGS, FastTextDocumentVectorizer, build_fasttext_vectorizer
 from .features import FEATURE_CONFIGS, build_vectorizer, describe_vectorizer
 
 __all__ = [
+    "FASTTEXT_CONFIGS",
+    "FastTextDocumentVectorizer",
+    "build_fasttext_vectorizer",
     "FEATURE_CONFIGS",
     "LanguageDetector",
     "LanguagePrediction",

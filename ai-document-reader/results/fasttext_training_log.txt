@@ -1,0 +1,113 @@
+1) Loading and validating dataset
+  train: 23973 rows  french=7991  kinyarwanda=7991  english=7991
+  test: 5994 rows  french=1998  kinyarwanda=1998  english=1998
+2) Stratified split of train.csv -> train / validation (80%/20%), seed=42
+  train=19178  validation=4795  test=5994  split fingerprint={'train': '9119e708d3ce726b', 'validation': '298416300f105cd3', 'test': '918d6f2a645d8230'}
+
+3) FastText: fasttext_cbow_mean  {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 0, 'min_n': 3, 'max_n': 6, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean'}
+   representation: {'algorithm': 'CBOW', 'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'char_ngrams': [3, 6], 'bucket': 50000, 'negative_sampling': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean', 'document_vector_size': 100, 'l2_normalised': True, 'vocabulary_size': 23800, 'raw_settings': {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 0, 'min_n': 3, 'max_n': 6, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean'}}  (83.3s)
+   LogisticRegression   val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9835  (1.4s)
+   LinearSVC            val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9850  (0.6s)
+   RandomForest         val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9840  (2.8s)
+   KNN                  val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9829  (0.1s)
+
+3) FastText: fasttext_skipgram_mean  {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 1, 'min_n': 3, 'max_n': 6, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean'}
+   representation: {'algorithm': 'skip-gram', 'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'char_ngrams': [3, 6], 'bucket': 50000, 'negative_sampling': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean', 'document_vector_size': 100, 'l2_normalised': True, 'vocabulary_size': 23800, 'raw_settings': {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 1, 'min_n': 3, 'max_n': 6, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean'}}  (48.2s)
+   LogisticRegression   val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9869  (0.1s)
+   LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9879  (0.2s)
+   RandomForest         val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9852  (1.7s)
+   KNN                  val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9881  (0.0s)
+
+3) FastText: fasttext_skipgram_ng2-5_mean  {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 1, 'min_n': 2, 'max_n': 5, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean'}
+   representation: {'algorithm': 'skip-gram', 'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'char_ngrams': [2, 5], 'bucket': 50000, 'negative_sampling': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean', 'document_vector_size': 100, 'l2_normalised': True, 'vocabulary_size': 23800, 'raw_settings': {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 1, 'min_n': 2, 'max_n': 5, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean'}}  (78.8s)
+   LogisticRegression   val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9894  (0.1s)
+   LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9892  (0.3s)
+   RandomForest         val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9862  (2.1s)
+   KNN                  val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9898  (0.0s)
+
+3) FastText: fasttext_skipgram_nosubwords_mean  {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 1, 'min_n': 3, 'max_n': 0, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean'}
+   representation: {'algorithm': 'skip-gram', 'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'char_ngrams': 'none', 'bucket': 50000, 'negative_sampling': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean', 'document_vector_size': 100, 'l2_normalised': True, 'vocabulary_size': 23800, 'raw_settings': {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 1, 'min_n': 3, 'max_n': 0, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean'}}  (28.7s)
+   LogisticRegression   val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9875  (1.7s)
+   LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9852  (0.5s)
+   RandomForest         val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9842  (3.6s)
+   KNN                  val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9852  (0.0s)
+
+3) FastText: fasttext_skipgram_meanmax  {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 1, 'min_n': 3, 'max_n': 6, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean_max'}
+   representation: {'algorithm': 'skip-gram', 'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'char_ngrams': [3, 6], 'bucket': 50000, 'negative_sampling': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean_max', 'document_vector_size': 200, 'l2_normalised': True, 'vocabulary_size': 23800, 'raw_settings': {'vector_size': 100, 'window': 5, 'min_count': 2, 'epochs': 20, 'sg': 1, 'min_n': 3, 'max_n': 6, 'bucket': 50000, 'negative': 5, 'seed': 42, 'workers': 1, 'pooling': 'mean_max'}}  (4.5s)
+   LogisticRegression   val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9867  (1.6s)
+   LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9875  (0.9s)
+   RandomForest         val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9869  (5.2s)
+   KNN                  val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9877  (0.0s)
+
+4) Model selection (validation macro F1; ties -> 3-word validation F1 -> training time)
+   BEST: KNN + fasttext_skipgram_ng2-5_mean  validation macro-F1=1.0000
+   Held-out test: accuracy=1.0000  macro-F1=1.0000
+   Deployed model: KNN  test accuracy=1.0000  macro-F1=1.0000
+
+5) Saving models and results
+   C:\Users\marie\Desktop\K Lab\ai-document-reader\models\language_detection\fasttext
+   C:\Users\marie\Desktop\K Lab\ai-document-reader\results
+
+6) Results (macro-averaged; sorted by validation F1)
+                                                      test_accuracy  validation_accuracy  test_f1_macro  validation_f1_macro
+features                          classifier                                                                                
+fasttext_skipgram_meanmax         KNN                        0.9997               1.0000         0.9997               1.0000
+fasttext_skipgram_mean            RandomForest               0.9998               1.0000         0.9998               1.0000
+                                  LinearSVC                  1.0000               1.0000         1.0000               1.0000
+                                  KNN                        1.0000               1.0000         1.0000               1.0000
+fasttext_skipgram_ng2-5_mean      RandomForest               0.9998               1.0000         0.9998               1.0000
+                                  LinearSVC                  1.0000               1.0000         1.0000               1.0000
+fasttext_skipgram_nosubwords_mean LinearSVC                  1.0000               1.0000         1.0000               1.0000
+fasttext_skipgram_ng2-5_mean      KNN                        1.0000               1.0000         1.0000               1.0000
+fasttext_skipgram_meanmax         LogisticRegression         0.9997               1.0000         0.9997               1.0000
+                                  LinearSVC                  0.9998               1.0000         0.9998               1.0000
+                                  RandomForest               0.9998               1.0000         0.9998               1.0000
+fasttext_cbow_mean                KNN                        0.9998               0.9998         0.9998               0.9998
+                                  RandomForest               1.0000               0.9998         1.0000               0.9998
+                                  LogisticRegression         1.0000               0.9998         1.0000               0.9998
+                                  LinearSVC                  1.0000               0.9998         1.0000               0.9998
+fasttext_skipgram_mean            LogisticRegression         0.9998               0.9998         0.9998               0.9998
+fasttext_skipgram_ng2-5_mean      LogisticRegression         0.9998               0.9998         0.9998               0.9998
+fasttext_skipgram_nosubwords_mean KNN                        1.0000               0.9998         1.0000               0.9998
+                                  LogisticRegression         1.0000               0.9998         1.0000               0.9998
+                                  RandomForest               1.0000               0.9998         1.0000               0.9998
+
+7) Short-text robustness - test macro F1 on the first N words of each sentence
+words                                                      1       2       3       5
+features                          classifier                                        
+fasttext_cbow_mean                KNN                 0.9166  0.9602  0.9823  0.9950
+                                  LinearSVC           0.9195  0.9635  0.9842  0.9947
+                                  LogisticRegression  0.9184  0.9595  0.9813  0.9942
+                                  RandomForest        0.9121  0.9608  0.9843  0.9943
+fasttext_skipgram_mean            KNN                 0.9338  0.9715  0.9885  0.9963
+                                  LinearSVC           0.9343  0.9693  0.9877  0.9962
+                                  LogisticRegression  0.9177  0.9705  0.9878  0.9962
+                                  RandomForest        0.9291  0.9667  0.9847  0.9960
+fasttext_skipgram_meanmax         KNN                 0.9300  0.9700  0.9883  0.9965
+                                  LinearSVC           0.9320  0.9700  0.9875  0.9962
+                                  LogisticRegression  0.9358  0.9700  0.9875  0.9957
+                                  RandomForest        0.9262  0.9690  0.9863  0.9950
+fasttext_skipgram_ng2-5_mean      KNN                 0.9299  0.9708  0.9887  0.9962
+                                  LinearSVC           0.9308  0.9703  0.9883  0.9963
+                                  LogisticRegression  0.9269  0.9708  0.9877  0.9960
+                                  RandomForest        0.9171  0.9694  0.9868  0.9952
+fasttext_skipgram_nosubwords_mean KNN                 0.8934  0.9550  0.9842  0.9958
+                                  LinearSVC           0.8947  0.9550  0.9835  0.9960
+                                  LogisticRegression  0.8968  0.9587  0.9847  0.9962
+                                  RandomForest        0.8731  0.9555  0.9828  0.9957
+
+Classification report - deployed model (KNN) on held-out test set:
+              precision    recall  f1-score   support
+
+     english     1.0000    1.0000    1.0000      1998
+      french     1.0000    1.0000    1.0000      1998
+ kinyarwanda     1.0000    1.0000    1.0000      1998
+
+    accuracy                         1.0000      5994
+   macro avg     1.0000    1.0000    1.0000      5994
+weighted avg     1.0000    1.0000    1.0000      5994
+
+Confusion matrix (rows=true ['english', 'french', 'kinyarwanda']):
+[[1998    0    0]
+ [   0 1998    0]
+ [   0    0 1998]]

@@ -1,0 +1,113 @@
+{
+  "task": "language_detection",
+  "model_version": "part2-fasttext-v1",
+  "trained_at": "2026-10-02T11:14:45+00:00",
+  "representation_type": "fasttext",
+  "representation": "FastText word embeddings (dense; mean word vector per document)",
+  "feature_config": "fasttext_skipgram_ng2-5_mean",
+  "representation_settings": {
+    "algorithm": "skip-gram",
+    "vector_size": 100,
+    "window": 5,
+    "min_count": 2,
+    "epochs": 20,
+    "char_ngrams": [
+      2,
+      5
+    ],
+    "bucket": 50000,
+    "negative_sampling": 5,
+    "seed": 42,
+    "workers": 1,
+    "pooling": "mean",
+    "document_vector_size": 100,
+    "l2_normalised": true,
+    "vocabulary_size": 23800,
+    "raw_settings": {
+      "vector_size": 100,
+      "window": 5,
+      "min_count": 2,
+      "epochs": 20,
+      "sg": 1,
+      "min_n": 2,
+      "max_n": 5,
+      "bucket": 50000,
+      "negative": 5,
+      "seed": 42,
+      "workers": 1,
+      "pooling": "mean"
+    }
+  },
+  "representation_files": [
+    "fasttext.model"
+  ],
+  "classifier_file": "classifier.pkl",
+  "selected_classifier": "KNN",
+  "probability_calibration": null,
+  "classifier_params": {
+    "algorithm": "brute",
+    "leaf_size": 30,
+    "metric": "cosine",
+    "metric_params": null,
+    "n_jobs": null,
+    "n_neighbors": 5,
+    "p": 2,
+    "weights": "uniform"
+  },
+  "supports_probabilities": true,
+  "supported_languages": [
+    "english",
+    "french",
+    "kinyarwanda"
+  ],
+  "selection_metric": "validation macro F1 (tie-break: validation macro F1 on 3-word snippets, then training time)",
+  "validation_metrics": {
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0
+  },
+  "test_metrics": {
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0
+  },
+  "test_metrics_before_calibration": {
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0
+  },
+  "dataset": {
+    "train_rows": 19178,
+    "validation_rows": 4795,
+    "test_rows": 5994,
+    "train_csv": "data\\language_detection\\train.csv",
+    "test_csv": "data\\language_detection\\test.csv",
+    "split_fingerprint": {
+      "train": "9119e708d3ce726b",
+      "validation": "298416300f105cd3",
+      "test": "918d6f2a645d8230"
+    }
+  },
+  "preprocessing": {
+    "mojibake_repair": "\u00e2\u20ac\u2122 -> '",
+    "unicode_normalisation": "NFC",
+    "lowercase": true,
+    "apostrophes": "normalised to ' and kept inside words",
+    "removed": [
+      "URLs",
+      "e-mails",
+      "digits",
+      "punctuation/symbols"
+    ],
+    "whitespace": "collapsed to single spaces",
+    "stopwords_removed_for_language_detection": false
+  },
+  "random_seed": 42,
+  "scikit_learn_version": "1.9.0",
+  "embedding_library": "gensim 4.4.0 (FastText)",
+  "embedding_training_data": "training split only (unsupervised; no labels, no validation/test text)",
+  "contextual": false
+}

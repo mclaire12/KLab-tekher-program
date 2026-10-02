@@ -159,6 +159,7 @@ class FastTextDocumentVectorizer:
             "workers": s["workers"], "pooling": self.pooling, "document_vector_size": self.dimension,
             "l2_normalised": True,
             "vocabulary_size": len(self.wv.key_to_index) if self.wv is not None else None,
+            "raw_settings": {**self.settings, "pooling": self.pooling},  # used to reload the model
         }
 
     def save(self, model_dir) -> list[str]:

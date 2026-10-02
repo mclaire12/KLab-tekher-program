@@ -47,6 +47,10 @@ def _load_representation(metadata: dict, model_dir: Path):
     kind = metadata.get("representation_type", "tfidf")
     if kind == "tfidf":
         return joblib.load(model_dir / "vectorizer.pkl")
+    if kind == "fasttext":
+        from .embeddings import FastTextDocumentVectorizer
+
+        return FastTextDocumentVectorizer.load(model_dir, metadata["representation_settings"]["raw_settings"])
     raise ValueError(f"Unknown representation type '{kind}' in {model_dir}")
 
 

@@ -1,0 +1,6 @@
+features,best_val_f1_macro,mean_val_f1_macro
+fasttext_cbow_mean,0.999791,0.999791
+fasttext_skipgram_mean,1.0,0.999948
+fasttext_skipgram_ng2-5_mean,1.0,0.999948
+fasttext_skipgram_nosubwords_mean,1.0,0.999844
+fasttext_skipgram_meanmax,1.0,1.0
