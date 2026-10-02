@@ -192,24 +192,21 @@ with tab_sum:
 with tab_qa:
     retriever = cached_retriever(doc.text)
     question = st.text_input("Ask a question about the document",
-                             placeholder="e.g. What is this document about?")
+                             placeholder="e.g. What is the phone number of the document owner?")
     if question:
-        answer = retriever.answer(question)
+        with st.spinner("Searching the document (the first question loads the QA model)..."):
+            answer = retriever.answer(question)
         if answer.answer is None:
-            st.warning("I could not find a passage in the document related to this question. "
-                       "Try using words that appear in the document.")
+            st.warning("The answer to this question was not found in the document.")
         else:
-            st.success(answer.answer)
-        if answer.passages:
-            best = answer.passages[0]
-            with st.expander(f"Source passage (similarity {best.score:.2f})", expanded=answer.answer is not None):
-                st.write(best.text)
-            if len(answer.passages) > 1:
-                with st.expander("Other related passages"):
-                    for passage in answer.passages[1:]:
-                        st.caption(f"Similarity {passage.score:.2f}")
-                        st.write(passage.text)
-    st.caption("Answers are sentences retrieved from the document (TF-IDF passage search), not generated text.")
+            st.success(f"**{answer.answer}**")
+        if answer.source:
+            with st.expander("Source in the document"):
+                st.write(answer.source)
+        if answer.method:
+            st.caption(f"Method: {answer.method}")
+    st.caption("Answers are copied exactly from the document (pattern search or a pretrained "
+               "extractive QA model); nothing is generated. Always check the source.")
 
 # --------------------------------------------------------------- Read ----
 with tab_read:

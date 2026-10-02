@@ -17,8 +17,11 @@ streamlit>=1.45
 gTTS>=2.5            # Google TTS (online): English, French
 pyttsx3>=2.90        # Offline OS voices, adjustable speed
 
-# --- Optional (large downloads, only needed for optional features) ---
-# Abstractive English summary (sshleifer/distilbart-cnn-12-6) and
-# Kinyarwanda TTS (facebook/mms-tts-kin). The app works without them.
-# transformers>=4.40
-# torch>=2.2
+# --- Pretrained models (large downloads on first use) ---
+# Exact answers in Ask AI (deepset/xlm-roberta-base-squad2), abstractive English
+# summary (sshleifer/distilbart-cnn-12-6) and Kinyarwanda TTS (facebook/mms-tts-kin).
+# Without them the app still runs and falls back to simpler, clearly labelled methods.
+# CPU-only torch: pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch>=2.2
+transformers>=4.40
+sentencepiece>=0.2

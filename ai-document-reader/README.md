@@ -90,7 +90,7 @@ machine-learning baseline that can later be compared with word embeddings.
 | **Upload / Document Information** | filename, type, size, pages (PDF), detected language, confidence | PyMuPDF, python-docx, trained TF-IDF model |
 | **📄 Document** | full extracted text | PyMuPDF, python-docx |
 | **📝 Summary** | extractive summary (any language) or abstractive summary (English) | frequency-based sentence scoring / pretrained `sshleifer/distilbart-cnn-12-6` |
-| **💬 Ask AI** | answers questions with a sentence from the document and **always shows the source passage** | TF-IDF retrieval + cosine similarity |
+| **❓ Ask AI** | gives the **exact answer** copied from the document (e.g. only the phone number) and shows its source | patterns + TF-IDF retrieval + pretrained extractive QA model |
 | **🔊 Read** | reads the document, the summary or custom text aloud at 0.75x–1.5x speed | gTTS, pyttsx3, pretrained `facebook/mms-tts-kin` |
 
 Model evaluation is **not** part of the interface: it is produced in code by the
@@ -142,6 +142,24 @@ when scoring sentences for the extractive summary. The Kinyarwanda list is kept
 deliberately short because Kinyarwanda is agglutinative — many grammatical
 elements are prefixes attached to content words, so aggressive removal would
 delete meaning.
+
+### How Ask AI finds an exact answer
+
+```
+Question ─┬─► 1. Exact patterns (rule-based, explainable)
+          │      phone · e-mail · link · owner's name · address · "Label: value" lines
+          │      owner's details = first occurrence in the document;
+          │      "phone of <Name>" = occurrence closest to that name
+          │
+          ├─► 2. TF-IDF retrieval of the top passages (+ start of the document)
+          │      → pretrained extractive QA model (deepset/xlm-roberta-base-squad2)
+          │        selects the exact answer span, or "no answer"
+          │
+          └─► 3. Fallback without the QA model: best-matching sentence
+```
+
+Example: *"what are the name of the owner and its phone number?"* →
+**Name: Alice Mukamana · Phone: +250 781 234 567** (fictional test CV).
 
 ## 6. Dataset
 
@@ -228,11 +246,11 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-Optional (pretrained English abstractive summary and Kinyarwanda TTS — large downloads):
+Pretrained models (exact answers in Ask AI, English abstractive summary, Kinyarwanda TTS — large downloads; `requirements.txt` already lists them):
 
 ```bash
 python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-python -m pip install transformers
+python -m pip install transformers sentencepiece
 ```
 
 > **Important:** install the packages into the **same** Python environment that
@@ -414,7 +432,8 @@ Evaluation charts for the presentation are in `results/` (see §13).
 | **Language detection (main ML task)** | TF-IDF char_wb 2–5-grams + **LinearSVC** (calibrated) | ✅ **yes** — `training/train_language_detection.py` |
 | Extractive summary | frequency-based sentence scoring (no ML model) | — rule-based |
 | Abstractive summary (English only, optional) | pretrained `sshleifer/distilbart-cnn-12-6` | ❌ no, pretrained |
-| Question answering | TF-IDF retrieval over the document's own passages + cosine similarity; answer = best-matching sentence | — fitted per document at query time, not trained on data |
+| Question answering — contact details & fields | patterns for phone / e-mail / link, owner's name, address, `Label: value` lines | — rule-based |
+| Question answering — other questions | TF-IDF passage retrieval (per document) + pretrained extractive QA model `deepset/xlm-roberta-base-squad2` | ❌ no, pretrained (retrieval index fitted per document) |
 | TTS English/French | Google TTS (gTTS, online) or OS voices (pyttsx3, offline) | ❌ no |
 | TTS Kinyarwanda | pretrained Meta MMS `facebook/mms-tts-kin` (CC-BY-NC 4.0); fallback = Swahili voice, labelled as an approximation | ❌ no |
 
@@ -449,7 +468,7 @@ ai-document-reader/
 │   │   ├── classifiers.py              the 4 classifiers
 │   │   └── detector.py                 loads model, predicts language
 │   ├── summarization/                  extractive + optional pretrained abstractive
-│   ├── question_answering/             TF-IDF retrieval QA
+│   ├── question_answering/             exact answers: patterns + retrieval + extractive QA model
 │   └── tts/                            gTTS, pyttsx3, MMS-TTS
 ├── results/                            metrics CSVs, report, charts, training log
 ├── samples/                            demo TXT / PDF / DOCX
@@ -472,8 +491,12 @@ ai-document-reader/
   Platt scaling; on very easy inputs they are often close to 100%, which says
   nothing about how the model behaves on other documents.
 - **No OCR.** Scanned PDFs contain images, not text, and are reported as empty.
-- **Q&A is extractive and lexical.** It finds passages that share words with the
-  question; synonyms or paraphrases are missed, and it cannot reason or combine facts.
+- **Q&A answers are only as good as their method.** Patterns assume common layouts
+  (the owner's details come first in a CV; a name is a short capitalised line).
+  The pretrained QA model can pick a wrong span — e.g. a past job for "current
+  job" — or guess when the answer is not in the document. It never generates
+  text, and the source is always shown so the answer can be checked. It does
+  not support Kinyarwanda well.
 - **Summaries.** The extractive method only selects sentences; the abstractive model
   is English-only and requires a large download.
 - **Kinyarwanda TTS is limited.** It depends on a pretrained research model (non-
