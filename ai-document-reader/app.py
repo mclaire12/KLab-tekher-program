@@ -1,11 +1,16 @@
-"""AI Document Reader - Part 1 (TF-IDF baseline). Run: streamlit run app.py"""
+"""AI Document Reader - Part 1 (TF-IDF baseline). Run: python -m streamlit run app.py
+
+Model evaluation is done in code (training/train_language_detection.py -> results/),
+not in this interface.
+"""
 
 from __future__ import annotations
+
+import html
 
 import pandas as pd
 import streamlit as st
 
-from src.config import RESULTS_DIR
 from src.extraction import SUPPORTED_TYPES, UnsupportedFileTypeError, extract_text
 from src.language_detection import LanguageDetector, ModelNotTrainedError
 from src.preprocessing import preprocess
@@ -15,7 +20,26 @@ from src.summarization import (
 )
 from src.tts import ENGINE_LABELS, TTSUnavailableError, engines_for, synthesize
 
-st.set_page_config(page_title="AI Document Reader", page_icon="📄", layout="wide")
+st.set_page_config(page_title="AI Document Reader", page_icon="📄", layout="centered")
+
+LANGUAGES = ["english", "french", "kinyarwanda"]
+SPEEDS = {"0.75x": 0.75, "1x": 1.0, "1.25x": 1.25, "1.5x": 1.5}
+READ_EXCERPT_CHARS = 3000
+
+st.markdown(
+    """
+    <style>
+      [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none; }
+      .block-container { max-width: 960px; padding-top: 3rem; }
+      .app-title { text-align: center; font-size: 2.1rem; font-weight: 800;
+                   letter-spacing: 0.12em; margin: 0; }
+      .app-subtitle { text-align: center; color: #6b6b6b; margin: 0.4rem 0 0.2rem; }
+      .info-label { color: #6b6b6b; font-size: 0.82rem; margin-bottom: 0.25rem; }
+      .info-value { font-weight: 600; font-size: 1.02rem; overflow-wrap: anywhere; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 # ------------------------------------------------------------- cached ----
@@ -24,27 +48,43 @@ def load_detector() -> LanguageDetector:
     return LanguageDetector.load()
 
 
-@st.cache_data(show_spinner="Extracting text...")
+@st.cache_data(show_spinner=False)
 def cached_extract(data: bytes, filename: str):
     return extract_text(data, filename)
 
 
-@st.cache_resource(show_spinner="Indexing document for questions...")
+@st.cache_resource(show_spinner=False)
 def cached_retriever(text: str) -> DocumentRetriever:
     return DocumentRetriever(text)
 
 
 def human_size(n: int) -> str:
-    for unit in ("B", "KB", "MB"):
-        if n < 1024:
-            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
-        n /= 1024
-    return f"{n:.1f} GB"
+    if n < 1024:
+        return f"{n} B"
+    if n < 1024 ** 2:
+        return f"{n / 1024:.1f} KB"
+    return f"{n / 1024 ** 2:.2f} MB"
+
+
+def info_cell(column, label: str, value: str) -> None:
+    column.markdown(
+        f'<div class="info-label">{html.escape(label)}</div>'
+        f'<div class="info-value">{html.escape(value)}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 # ------------------------------------------------------------- header ----
-st.title("📄 AI Document Reader")
-st.caption("Part 1 — TF-IDF baseline · upload a document to extract, analyse, summarise, query and listen to it.")
+st.markdown('<div class="app-title">AI DOCUMENT READER</div>', unsafe_allow_html=True)
+st.markdown('<div class="app-subtitle">Upload · Understand · Summarize · Ask · Listen</div>',
+            unsafe_allow_html=True)
+st.divider()
+
+st.subheader("Upload your document")
+uploaded = st.file_uploader(
+    "Drag & Drop PDF / DOCX / TXT", type=list(SUPPORTED_TYPES),
+    help="PDF is read with PyMuPDF, DOCX with python-docx, TXT as UTF-8 text.",
+)
 
 try:
     detector = load_detector()
@@ -54,235 +94,186 @@ except ModelNotTrainedError as exc:
             "```bash\npython training/prepare_dataset.py\npython training/train_language_detection.py\n```")
     st.stop()
 
-meta = detector.metadata
-
-with st.sidebar:
-    st.header("Upload Document")
-    uploaded = st.file_uploader("PDF, DOCX or TXT", type=list(SUPPORTED_TYPES))
-    st.divider()
-    st.subheader("Language model")
-    st.markdown(
-        f"- **Representation:** {meta['feature_config']}\n"
-        f"- **Classifier:** {meta['selected_classifier']}\n"
-        f"- **Languages:** {', '.join(l.capitalize() for l in meta['supported_languages'])}\n"
-        f"- **Test macro F1:** {meta['test_metrics']['f1_macro']:.4f}\n"
-        f"- **Version:** {meta['model_version']}"
-    )
-
 if uploaded is None:
-    st.info("⬅️ Upload a PDF, DOCX or TXT file to begin.")
-    tab_model, = st.tabs(["📊 Model evaluation"])
-    show_doc = False
-else:
-    show_doc = True
+    st.stop()
 
-# ----------------------------------------------------------- document ----
-if show_doc:
+# A new upload must not show the previous document's summary or audio.
+if st.session_state.get("file_id") != uploaded.file_id:
+    st.session_state["file_id"] = uploaded.file_id
+    st.session_state.pop("summary", None)
+    st.session_state.pop("speech", None)
+
+# --------------------------------------------------------- processing ----
+with st.status("Processing document...", expanded=False) as status:
     try:
         doc = cached_extract(uploaded.getvalue(), uploaded.name)
     except UnsupportedFileTypeError as exc:
+        status.update(label="Unsupported file", state="error")
         st.error(str(exc))
         st.stop()
-    except Exception as exc:  # corrupted files etc.
+    except Exception as exc:  # corrupted files, missing libraries, ...
+        status.update(label="Could not read the document", state="error")
         st.error(f"Could not read **{uploaded.name}**: {exc}")
         st.stop()
-
-    for warning in doc.warnings:
-        st.warning(warning)
+    st.write(f"Text extracted: {len(doc.text):,} characters")
     if doc.is_empty:
+        status.update(label="No text found", state="error")
+        for warning in doc.warnings:
+            st.warning(warning)
         st.stop()
 
     cleaned, tokens, stats = preprocess(doc.text)
-    try:
-        prediction = detector.predict(doc.text)
-    except ValueError as exc:
-        st.error(str(exc))
-        st.stop()
+    st.write(f"Text cleaned and tokenized: {stats.tokens:,} tokens")
+    prediction = detector.predict(doc.text)
     language = prediction.language
+    st.write(f"Language detected: {language.capitalize()}")
+    status.update(label="Ready", state="complete")
 
-    st.subheader("Document Information")
-    c = st.columns(6)
-    c[0].metric("File", doc.filename if len(doc.filename) < 22 else doc.filename[:19] + "…")
-    c[1].metric("Type", doc.file_type.upper())
-    c[2].metric("Size", human_size(doc.size_bytes))
-    c[3].metric("Pages", doc.num_pages if doc.num_pages is not None else "n/a")
-    c[4].metric("Characters", f"{len(doc.text):,}")
-    c[5].metric("Detected language", language.capitalize())
-    if prediction.confidence is not None:
-        st.caption(f"Model confidence for this document: **{prediction.confidence:.1%}** "
-                   "(see the Document tab for what this means).")
-    else:
-        st.caption(f"{prediction.model_name} does not output probabilities; decision scores are shown in the Document tab.")
+for warning in doc.warnings:
+    st.warning(warning)
 
-    tab_doc, tab_sum, tab_qa, tab_read, tab_model = st.tabs(
-        ["📄 Document", "📝 Summary", "💬 Ask AI", "🔊 Read", "📊 Model evaluation"]
-    )
+# --------------------------------------------------- document info card ----
+with st.container(border=True):
+    st.markdown("**Document Information**")
+    cols = st.columns([3.2, 0.8, 1, 0.8, 1.2, 1.2])
+    info_cell(cols[0], "File", doc.filename)
+    info_cell(cols[1], "Type", doc.file_type.upper())
+    info_cell(cols[2], "Size", human_size(doc.size_bytes))
+    info_cell(cols[3], "Pages", str(doc.num_pages) if doc.num_pages is not None else "n/a")
+    info_cell(cols[4], "Language", language.capitalize())
+    info_cell(cols[5], "Confidence",
+              f"{prediction.confidence:.0%}" if prediction.confidence is not None else "n/a")
 
-    # ------------------------------------------------------- Document ----
-    with tab_doc:
-        left, right = st.columns([3, 2])
-        with left:
-            st.markdown("#### Extracted text")
-            st.text_area("Extracted text", doc.text, height=480, label_visibility="collapsed")
-        with right:
-            st.markdown("#### Language detection")
-            st.markdown(
-                f"**Detected language:** {language.capitalize()}  \n"
-                f"**Model:** TF-IDF ({meta['feature_config']}) + {prediction.model_name}  \n"
-                f"**Characters analysed:** {prediction.characters_used:,}"
-            )
-            if prediction.probabilities:
-                st.markdown(f"**Confidence:** {prediction.confidence:.1%}")
-                st.bar_chart(pd.Series(prediction.probabilities, name="probability"), horizontal=True)
-            elif prediction.decision_scores:
-                st.markdown("**Confidence:** not available — this classifier does not estimate probabilities.")
-                st.dataframe(
-                    pd.DataFrame({"decision score": prediction.decision_scores}).round(3),
-                    width="stretch",
-                )
-                st.caption("Decision scores are signed distances from each class's separating "
-                           "hyperplane. The highest score wins. They are not probabilities.")
-            with st.expander("Confidence vs. accuracy — what is the difference?"):
-                st.markdown(
-                    "- **Confidence** (or decision score) describes how strongly the model "
-                    "prefers one language for *this particular document*.\n"
-                    "- **Accuracy / F1** describe how often the model was right on a *held-out test "
-                    f"set* of {meta['dataset']['test_rows']:,} labelled sentences "
-                    f"(test macro F1 = {meta['test_metrics']['f1_macro']:.4f}).\n"
-                    "- A high confidence does not guarantee a correct answer, and the model can only "
-                    "choose between English, French and Kinyarwanda — a document in any other "
-                    "language will still be assigned one of these three."
-                )
+tab_doc, tab_sum, tab_qa, tab_read = st.tabs(["📄 Document", "📝 Summary", "❓ Ask AI", "🔊 Read"])
 
-            st.markdown("#### Preprocessing statistics")
-            st.dataframe(pd.DataFrame(
-                {"value": [stats.original_characters, stats.cleaned_characters, stats.removed_characters,
-                           stats.tokens, stats.unique_tokens]},
-                index=["original characters", "cleaned characters", "removed characters",
-                       "tokens", "unique tokens"]), width="stretch")
-            with st.expander("Cleaned text sent to the model (first 1,000 characters)"):
-                st.code(cleaned[:1000] or "(empty)", language=None)
+# ----------------------------------------------------------- Document ----
+with tab_doc:
+    st.text_area("Extracted text", doc.text, height=380)
 
-    # -------------------------------------------------------- Summary ----
-    with tab_sum:
-        st.markdown("#### Summary")
-        st.caption("Summarisation is a separate task from language detection: it does **not** use the "
-                   "trained TF-IDF language classifier.")
-        methods = ["Extractive (frequency-based, all languages)"]
-        if language == "english":
-            methods.append(f"Abstractive (pretrained {ABSTRACTIVE_MODEL_NAME}, English only)")
-        method = st.radio("Method", methods, horizontal=True)
-        n_sent = st.slider("Sentences in extractive summary", 2, 12, 5)
-        if st.button("Generate summary", type="primary"):
-            result = None
-            if method.startswith("Abstractive"):
-                try:
-                    with st.spinner(f"Running {ABSTRACTIVE_MODEL_NAME} (first run downloads the model)..."):
-                        result = abstractive_summary(doc.text, language)
-                except AbstractiveUnavailableError as exc:
-                    st.warning(f"Abstractive model unavailable: {exc}\n\n"
-                               "**Falling back to the extractive summary below.**")
-            if result is None:
-                result = extractive_summary(doc.text, n_sent, language)
-            st.session_state["summary"] = result
-
-        result = st.session_state.get("summary")
-        if result is not None:
-            label = ("EXTRACTIVE summary — sentences copied verbatim from the document"
-                     if result.method == "extractive"
-                     else f"ABSTRACTIVE summary — generated by pretrained model {result.model_name}")
-            st.info(f"**{label}**  \nModel/method: {result.model_name}")
-            if not result.summary:
-                st.warning("The document is too short to summarise.")
-            elif result.method == "extractive":
-                for i, s in zip(result.sentence_indices, result.sentences):
-                    st.markdown(f"- {s}  \n  <small>sentence #{i + 1}</small>", unsafe_allow_html=True)
-            else:
-                st.write(result.summary)
-
-    # --------------------------------------------------------- Ask AI ----
-    with tab_qa:
-        st.markdown("#### Ask a question about the document")
-        st.caption("Method: **retrieval-based, extractive** question answering. The document is split into "
-                   "overlapping passages, indexed with TF-IDF, and the passage most similar to your "
-                   "question (cosine similarity) is returned. The answer is a sentence copied from the "
-                   "document — this is not a generative AI model.")
-        retriever = cached_retriever(doc.text)
-        question = st.text_input("Question", placeholder="e.g. Who is responsible for the project?")
-        if question:
-            answer = retriever.answer(question)
-            if answer.answer is None:
-                st.warning("No passage in the document is sufficiently related to this question "
-                           f"(best similarity {answer.score:.3f}). Try different keywords.")
-            else:
-                st.success(f"**Answer:** {answer.answer}")
-                st.caption(f"Similarity score of the source passage: {answer.score:.3f} (0 = unrelated, 1 = identical wording)")
-            for rank, passage in enumerate(answer.passages, 1):
-                with st.expander(f"Source passage {rank} · similarity {passage.score:.3f} · chunk #{passage.chunk_index + 1}",
-                                 expanded=rank == 1 and answer.answer is not None):
-                    st.write(passage.text)
-
-    # ----------------------------------------------------------- Read ----
-    with tab_read:
-        st.markdown("#### Read the document aloud")
-        tts_language = st.selectbox(
-            "Reading language", ["english", "french", "kinyarwanda"],
-            index=["english", "french", "kinyarwanda"].index(language),
-            format_func=str.capitalize, help="Defaults to the detected language.",
+    left, right = st.columns(2)
+    with left:
+        st.markdown("**Language detection**")
+        st.markdown(
+            f"Detected language: **{language.capitalize()}**  \n"
+            f"Model: TF-IDF ({detector.metadata['feature_config']}) + {prediction.model_name}  \n"
+            f"Characters analysed: {prediction.characters_used:,}"
         )
-        if tts_language == "kinyarwanda":
-            st.warning("**Kinyarwanda TTS support is limited.** Google TTS and standard operating-system "
-                       "voices have no Kinyarwanda voice. This app uses Meta's *pretrained* MMS model "
-                       "`facebook/mms-tts-kin` (needs `transformers` + `torch`, downloaded on first use). "
-                       "No Kinyarwanda TTS model was trained in this project.")
-        engines = engines_for(tts_language)
-        engine = st.selectbox("Voice engine", engines, format_func=ENGINE_LABELS.get)
-        speed = st.slider("Reading speed", 0.5, 2.0, 1.0, 0.1,
-                          help="gTTS supports only normal or slow (< 1.0). pyttsx3 and MMS support the full range.")
-        max_chars = min(len(doc.text), 5000)
-        start, end = st.slider("Characters to read", 0, len(doc.text), (0, max_chars), step=50,
-                               help="Long passages take longer to synthesise.")
-        if st.button("🔊 Generate audio", type="primary"):
-            try:
-                with st.spinner(f"Synthesising speech with {ENGINE_LABELS[engine]}..."):
-                    speech = synthesize(doc.text[start:end], tts_language, engine, speed)
-                st.session_state["speech"] = speech
-            except TTSUnavailableError as exc:
-                st.session_state.pop("speech", None)
-                st.error(str(exc))
-        speech = st.session_state.get("speech")
-        if speech is not None:
-            st.audio(speech.audio, format=speech.mime)
-            st.caption(f"Engine: {ENGINE_LABELS[speech.engine]}" + (f" · {speech.note}" if speech.note else ""))
+        if prediction.probabilities:
+            probs = pd.Series(prediction.probabilities).rename(index=str.capitalize)
+            st.dataframe(probs.to_frame("probability").style.format("{:.1%}"), width="stretch")
+        with st.expander("What does confidence mean?"):
+            st.markdown(
+                "**Confidence** is the probability the model gives to the predicted language "
+                "for *this document*. It is **not** the model's accuracy: accuracy is measured "
+                "once, on a held-out test set, during training. A high confidence does not "
+                "guarantee a correct answer, and the model can only choose between English, "
+                "French and Kinyarwanda."
+            )
+    with right:
+        st.markdown("**Preprocessing statistics**")
+        st.dataframe(pd.DataFrame(
+            {"value": [stats.original_characters, stats.cleaned_characters, stats.removed_characters,
+                       stats.tokens, stats.unique_tokens]},
+            index=["Original characters", "Cleaned characters", "Removed characters",
+                   "Tokens", "Unique tokens"]), width="stretch")
 
-# ------------------------------------------------------ Model evaluation ----
-with tab_model:
-    st.markdown("#### Language detection — evaluation results")
-    st.caption("All numbers below are computed by `training/train_language_detection.py` on the real dataset. "
-               "Model selection used the validation split; the test split was only used for reporting.")
-    results_csv = RESULTS_DIR / "language_detection_results.csv"
-    if not results_csv.exists():
-        st.warning("No results yet. Run `python training/train_language_detection.py`.")
+# ------------------------------------------------------------ Summary ----
+with tab_sum:
+    methods = ["Extractive (all languages)"]
+    if language == "english":
+        methods.append("Abstractive (English, pretrained)")
+    c1, c2 = st.columns([2, 1])
+    method = c1.radio("Method", methods, horizontal=True)
+    n_sent = c2.selectbox("Length (sentences)", [3, 5, 7, 10], index=1,
+                          disabled=method.startswith("Abstractive"))
+    if st.button("Generate Summary", type="primary"):
+        result = None
+        if method.startswith("Abstractive"):
+            try:
+                with st.spinner("Summarising (the first run downloads the model)..."):
+                    result = abstractive_summary(doc.text, language)
+            except AbstractiveUnavailableError as exc:
+                st.warning(f"Abstractive model unavailable ({exc}). Showing the extractive summary instead.")
+        if result is None:
+            result = extractive_summary(doc.text, n_sent, language)
+        st.session_state["summary"] = result
+
+    result = st.session_state.get("summary")
+    if result is not None:
+        if not result.summary:
+            st.warning("The document is too short to summarise.")
+        else:
+            with st.container(border=True):
+                if result.method == "extractive":
+                    for sentence in result.sentences:
+                        st.markdown(f"- {sentence}")
+                else:
+                    st.write(result.summary)
+            if result.method == "extractive":
+                st.caption("Extractive summary: the most representative sentences, copied word-for-word "
+                           "from the document (frequency-based sentence scoring).")
+            else:
+                st.caption(f"Abstractive summary generated by the pretrained model {ABSTRACTIVE_MODEL_NAME}.")
+
+# ------------------------------------------------------------- Ask AI ----
+with tab_qa:
+    retriever = cached_retriever(doc.text)
+    question = st.text_input("Ask a question about the document",
+                             placeholder="e.g. What is this document about?")
+    if question:
+        answer = retriever.answer(question)
+        if answer.answer is None:
+            st.warning("I could not find a passage in the document related to this question. "
+                       "Try using words that appear in the document.")
+        else:
+            st.success(answer.answer)
+        if answer.passages:
+            best = answer.passages[0]
+            with st.expander(f"Source passage (similarity {best.score:.2f})", expanded=answer.answer is not None):
+                st.write(best.text)
+            if len(answer.passages) > 1:
+                with st.expander("Other related passages"):
+                    for passage in answer.passages[1:]:
+                        st.caption(f"Similarity {passage.score:.2f}")
+                        st.write(passage.text)
+    st.caption("Answers are sentences retrieved from the document (TF-IDF passage search), not generated text.")
+
+# --------------------------------------------------------------- Read ----
+with tab_read:
+    c1, c2 = st.columns([1, 2])
+    speed_label = c1.selectbox("Reading Speed", list(SPEEDS), index=1)
+    source = c2.radio("Read", ["Full document (excerpt)", "Summary (if generated)", "Custom text"],
+                      horizontal=True)
+
+    if source.startswith("Full"):
+        text_to_read = doc.text[:READ_EXCERPT_CHARS]
+    elif source.startswith("Summary"):
+        summary = st.session_state.get("summary")
+        text_to_read = summary.summary if summary is not None else ""
+        if not text_to_read:
+            st.info("Generate a summary in the Summary tab first.")
     else:
-        res = pd.read_csv(results_csv)
-        key = ["features", "classifier"]
-        val = res[res["split"] == "validation"].set_index(key)
-        test = res[res["split"] == "test"].set_index(key)
-        tie_col = next((c for c in res.columns if c.endswith("words")), None)
-        table = pd.DataFrame({
-            "val macro F1": val["f1_macro"],
-            **({"val macro F1 (3 words)": val[tie_col]} if tie_col else {}),
-            "test accuracy": test["accuracy"],
-            "test precision": test["precision_macro"],
-            "test recall": test["recall_macro"],
-            "test macro F1": test["f1_macro"],
-        })
-        table = table.sort_values(list(table.columns[:2]), ascending=False).round(4)
-        st.dataframe(table, width="stretch")
-        st.markdown(f"**Selected:** {meta['selected_classifier']} + {meta['feature_config']} "
-                    f"— selection rule: {meta['selection_metric']}.")
-        for image, caption in [("model_comparison.png", "Validation macro F1 by representation and classifier"),
-                               ("short_text_robustness.png", "Robustness to short inputs (test set)"),
-                               ("confusion_matrix.png", "Confusion matrix of the selected model (test set)")]:
-            if (RESULTS_DIR / image).exists():
-                st.image(str(RESULTS_DIR / image), caption=caption)
+        text_to_read = st.text_area("Text to read", placeholder="Type or paste text here")
+
+    with st.expander("Voice options"):
+        tts_language = st.selectbox("Reading language", LANGUAGES, index=LANGUAGES.index(language),
+                                    format_func=str.capitalize)
+        engine = st.selectbox("Voice engine", engines_for(tts_language), format_func=ENGINE_LABELS.get)
+    if tts_language == "kinyarwanda":
+        st.caption("ℹ️ Kinyarwanda speech support is limited: it uses Meta's pretrained "
+                   "facebook/mms-tts-kin model (downloaded on first use). No voice was trained in this project.")
+
+    if st.button("► Generate & Play Audio", type="primary", disabled=not text_to_read.strip()):
+        try:
+            with st.spinner("Generating audio..."):
+                st.session_state["speech"] = synthesize(text_to_read, tts_language, engine, SPEEDS[speed_label])
+        except TTSUnavailableError as exc:
+            st.session_state.pop("speech", None)
+            st.error(str(exc))
+
+    speech = st.session_state.get("speech")
+    if speech is not None:
+        st.audio(speech.audio, format=speech.mime, autoplay=True)
+        if speech.note:
+            st.caption(speech.note)
+    st.caption("Streamlit's audio player supports play / pause / seek. Choose a speed, then generate audio.")
