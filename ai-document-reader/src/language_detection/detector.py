@@ -29,6 +29,9 @@ class LanguagePrediction:
     # THIS input - it is NOT the model's accuracy.
     confidence: float | None
     probabilities: dict[str, float] | None
+    # Raw decision-function margins (e.g. LinearSVC): larger = more strongly
+    # that class. They are NOT probabilities and do not sum to 1.
+    decision_scores: dict[str, float] | None
     model_name: str
     characters_used: int
 
@@ -71,13 +74,17 @@ class LanguageDetector:
         X = self.vectorizer.transform([cleaned])
         label = str(self.model.predict(X)[0])
 
-        probabilities = None
-        confidence = None
+        probabilities = decision_scores = confidence = None
+        classes = [str(c) for c in self.model.classes_]
         if self.supports_probabilities:
             proba = self.model.predict_proba(X)[0]
-            probabilities = {str(c): float(p) for c, p in zip(self.model.classes_, proba)}
+            probabilities = {c: float(p) for c, p in zip(classes, proba)}
             confidence = probabilities[label]
-        return LanguagePrediction(label, confidence, probabilities, self.model_name, len(cleaned))
+        elif hasattr(self.model, "decision_function"):
+            scores = self.model.decision_function(X)[0]
+            decision_scores = {c: float(v) for c, v in zip(classes, scores)}
+        return LanguagePrediction(label, confidence, probabilities, decision_scores,
+                                  self.model_name, len(cleaned))
 
     def predict_batch(self, texts: list[str]) -> np.ndarray:
         return self.model.predict(self.vectorizer.transform([clean_text(t) for t in texts]))
