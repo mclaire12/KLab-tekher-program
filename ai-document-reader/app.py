@@ -265,10 +265,20 @@ with tab_model:
         st.warning("No results yet. Run `python training/train_language_detection.py`.")
     else:
         res = pd.read_csv(results_csv)
-        table = res.pivot_table(index=["features", "classifier"], columns="split",
-                                values=["accuracy", "precision_macro", "recall_macro", "f1_macro"])
-        table.columns = [f"{split} {metric}" for metric, split in table.columns]
-        st.dataframe(table.sort_values("validation f1_macro", ascending=False).round(4), width="stretch")
+        key = ["features", "classifier"]
+        val = res[res["split"] == "validation"].set_index(key)
+        test = res[res["split"] == "test"].set_index(key)
+        tie_col = next((c for c in res.columns if c.endswith("words")), None)
+        table = pd.DataFrame({
+            "val macro F1": val["f1_macro"],
+            **({"val macro F1 (3 words)": val[tie_col]} if tie_col else {}),
+            "test accuracy": test["accuracy"],
+            "test precision": test["precision_macro"],
+            "test recall": test["recall_macro"],
+            "test macro F1": test["f1_macro"],
+        })
+        table = table.sort_values(list(table.columns[:2]), ascending=False).round(4)
+        st.dataframe(table, width="stretch")
         st.markdown(f"**Selected:** {meta['selected_classifier']} + {meta['feature_config']} "
                     f"— selection rule: {meta['selection_metric']}.")
         for image, caption in [("model_comparison.png", "Validation macro F1 by representation and classifier"),

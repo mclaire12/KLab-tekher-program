@@ -1,0 +1,5 @@
+features,best_val_f1_macro,mean_val_f1_macro
+tfidf_word_1gram,0.999583,0.998384
+tfidf_word_1-2gram,0.999583,0.998593
+tfidf_char_wb_1-3gram,1.0,0.999583
+tfidf_char_wb_2-5gram,1.0,0.998905
