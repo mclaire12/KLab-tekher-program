@@ -1,0 +1,24 @@
+# --- Core ML (Part 1: TF-IDF baseline) ---
+numpy>=1.26
+pandas>=2.0
+scikit-learn>=1.4
+joblib>=1.3
+matplotlib>=3.8
+requests>=2.31
+
+# --- Document extraction ---
+pymupdf>=1.24        # PDF  (import name: fitz)
+python-docx>=1.1     # DOCX (import name: docx)
+
+# --- Application ---
+streamlit>=1.35
+
+# --- Text-to-speech ---
+gTTS>=2.5            # Google TTS (online): English, French
+pyttsx3>=2.90        # Offline OS voices, adjustable speed
+
+# --- Optional (large downloads, only needed for optional features) ---
+# Abstractive English summary (sshleifer/distilbart-cnn-12-6) and
+# Kinyarwanda TTS (facebook/mms-tts-kin). The app works without them.
+# transformers>=4.40
+# torch>=2.2

@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Raw corpus downloads (re-created by training/prepare_dataset.py)
+data/language_detection/raw/
+
+# Per-classifier models can be large (e.g. Random Forest); re-create by training
+models/language_detection/classifiers/
+
+# Streamlit / OS
+.streamlit/secrets.toml
+.DS_Store
+Thumbs.db
