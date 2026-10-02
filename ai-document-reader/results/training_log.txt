@@ -1,4 +1,4 @@
-1) Loading and validating dataset
+﻿1) Loading and validating dataset
   train: 23973 rows  french=7991  kinyarwanda=7991  english=7991
   test: 5994 rows  french=1998  kinyarwanda=1998  english=1998
 2) Stratified split of train.csv -> train / validation (80%/20%), seed=42
@@ -6,35 +6,38 @@
 
 3) TF-IDF: tfidf_word_1gram  {'analyzer': 'word', 'ngram_range': (1, 1), 'token_pattern': "(?u)\\b\\w[\\w']*\\b", 'min_df': 2, 'sublinear_tf': True, 'max_features': 50000}
    vocabulary size: 23397
-   LogisticRegression   val acc=0.9990  val macro-F1=0.9990  3-word val F1=0.9443  (0.2s)
-   LinearSVC            val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9556  (0.0s)
-   RandomForest         val acc=0.9967  val macro-F1=0.9967  3-word val F1=0.9113  (2.5s)
-   KNN                  val acc=0.9983  val macro-F1=0.9983  3-word val F1=0.9685  (0.0s)
+   LogisticRegression   val acc=0.9990  val macro-F1=0.9990  3-word val F1=0.9443  (0.5s)
+   LinearSVC            val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9556  (0.2s)
+   RandomForest         val acc=0.9967  val macro-F1=0.9967  3-word val F1=0.9113  (3.2s)
+   KNN                  val acc=0.9983  val macro-F1=0.9983  3-word val F1=0.9685  (0.1s)
 
 3) TF-IDF: tfidf_word_1-2gram  {'analyzer': 'word', 'ngram_range': (1, 2), 'token_pattern': "(?u)\\b\\w[\\w']*\\b", 'min_df': 2, 'sublinear_tf': True, 'max_features': 100000}
    vocabulary size: 56105
    LogisticRegression   val acc=0.9992  val macro-F1=0.9992  3-word val F1=0.9495  (0.9s)
-   LinearSVC            val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9611  (0.2s)
-   RandomForest         val acc=0.9975  val macro-F1=0.9975  3-word val F1=0.9149  (4.1s)
+   LinearSVC            val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9611  (0.3s)
+   RandomForest         val acc=0.9975  val macro-F1=0.9975  3-word val F1=0.9149  (4.6s)
    KNN                  val acc=0.9981  val macro-F1=0.9981  3-word val F1=0.9738  (0.0s)
 
 3) TF-IDF: tfidf_char_wb_1-3gram  {'analyzer': 'char_wb', 'ngram_range': (1, 3), 'min_df': 2, 'sublinear_tf': True, 'max_features': 50000}
    vocabulary size: 8994
-   LogisticRegression   val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9734  (1.0s)
-   LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9754  (0.8s)
-   RandomForest         val acc=0.9992  val macro-F1=0.9992  3-word val F1=0.9569  (7.0s)
+   LogisticRegression   val acc=0.9998  val macro-F1=0.9998  3-word val F1=0.9734  (1.2s)
+   LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9754  (1.4s)
+   RandomForest         val acc=0.9992  val macro-F1=0.9992  3-word val F1=0.9565  (7.9s)
    KNN                  val acc=0.9994  val macro-F1=0.9994  3-word val F1=0.9729  (0.1s)
 
 3) TF-IDF: tfidf_char_wb_2-5gram  {'analyzer': 'char_wb', 'ngram_range': (2, 5), 'min_df': 2, 'sublinear_tf': True, 'max_features': 100000}
    vocabulary size: 99533
    LogisticRegression   val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9808  (2.6s)
    LinearSVC            val acc=1.0000  val macro-F1=1.0000  3-word val F1=0.9835  (0.4s)
-   RandomForest         val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9713  (7.3s)
-   KNN                  val acc=0.9960  val macro-F1=0.9960  3-word val F1=0.9611  (0.0s)
+   RandomForest         val acc=0.9996  val macro-F1=0.9996  3-word val F1=0.9711  (9.4s)
+   KNN                  val acc=0.9960  val macro-F1=0.9960  3-word val F1=0.9611  (0.1s)
 
 4) Model selection (validation macro F1; ties -> 3-word validation F1 -> training time)
    BEST: LinearSVC + tfidf_char_wb_2-5gram  validation macro-F1=1.0000
    Held-out test: accuracy=0.9997  macro-F1=0.9997
+
+   LinearSVC has no predict_proba -> calibrating probabilities (CalibratedClassifierCV, sigmoid, 5-fold CV on the training split)
+   Deployed model: LinearSVC (calibrated)  test accuracy=0.9997  macro-F1=0.9997
 
 5) Saving models and results
    C:\Users\marie\Desktop\K Lab\ai-document-reader\models\language_detection\tfidf_vectorizer.pkl
@@ -68,11 +71,11 @@ features              classifier
 tfidf_char_wb_1-3gram KNN                 0.9245  0.9501  0.9690  0.9888
                       LinearSVC           0.8849  0.9460  0.9727  0.9922
                       LogisticRegression  0.8739  0.9453  0.9720  0.9917
-                      RandomForest        0.8324  0.9228  0.9579  0.9838
+                      RandomForest        0.8319  0.9225  0.9582  0.9832
 tfidf_char_wb_2-5gram KNN                 0.9277  0.9413  0.9584  0.9802
                       LinearSVC           0.9055  0.9589  0.9797  0.9945
                       LogisticRegression  0.8901  0.9566  0.9778  0.9938
-                      RandomForest        0.8453  0.9363  0.9689  0.9907
+                      RandomForest        0.8453  0.9363  0.9691  0.9910
 tfidf_word_1-2gram    KNN                 0.8885  0.9474  0.9698  0.9895
                       LinearSVC           0.8313  0.9153  0.9591  0.9895
                       LogisticRegression  0.8136  0.9024  0.9464  0.9833
@@ -82,7 +85,7 @@ tfidf_word_1gram      KNN                 0.8970  0.9419  0.9674  0.9833
                       LogisticRegression  0.8061  0.8935  0.9417  0.9817
                       RandomForest        0.6990  0.8289  0.9003  0.9654
 
-Classification report - best model on held-out test set:
+Classification report - deployed model (LinearSVC (calibrated)) on held-out test set:
               precision    recall  f1-score   support
 
      english     0.9995    1.0000    0.9997      1998

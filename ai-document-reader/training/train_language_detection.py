@@ -7,6 +7,9 @@ Pipeline:
     -> select best (feature config, classifier) by VALIDATION macro F1
        (ties broken by validation macro F1 on 3-word snippets, then training time)
     -> short-text robustness: evaluate on test sentences truncated to 1/2/3/5 words
+    -> if the selected classifier has no probabilities (e.g. LinearSVC), wrap it in
+       CalibratedClassifierCV (sigmoid, 5-fold, training split only) so the app can
+       show a confidence; the deployed model is re-evaluated on the test set
     -> save vectorizer, best model, metadata, results, confusion matrices
 
 The test set (test.csv) is never used for model selection; it only reports
@@ -35,6 +38,8 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 import sklearn  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
+from sklearn.base import clone  # noqa: E402
+from sklearn.calibration import CalibratedClassifierCV  # noqa: E402
 from sklearn.metrics import (  # noqa: E402
     accuracy_score, classification_report, confusion_matrix,
     precision_recall_fscore_support,
@@ -331,12 +336,26 @@ def main() -> None:
     print(f"   BEST: {best_name} + {best_config}  validation macro-F1={best['f1_macro']:.4f}")
     print(f"   Held-out test: accuracy={test_metrics['accuracy']:.4f}  macro-F1={test_metrics['f1_macro']:.4f}")
 
+    # ------------------------------------------------- calibration ----
+    deployed_model, deployed_pred, calibration = best_model, best_test_pred, None
+    if not hasattr(best_model, "predict_proba"):
+        print(f"\n   {best_name} has no predict_proba -> calibrating probabilities "
+              "(CalibratedClassifierCV, sigmoid, 5-fold CV on the training split)")
+        deployed_model = CalibratedClassifierCV(clone(best_model), method="sigmoid", cv=5)
+        deployed_model.fit(best_vectorizer.transform(train["clean"]), train[LABEL_COLUMN])
+        deployed_pred = deployed_model.predict(best_vectorizer.transform(test["clean"]))
+        calibration = {"method": "sigmoid", "cv": 5, "fitted_on": "training split only"}
+    deployed_metrics = compute_metrics(test[LABEL_COLUMN], deployed_pred)
+    deployed_name = best_name + (" (calibrated)" if calibration else "")
+    print(f"   Deployed model: {deployed_name}  test accuracy={deployed_metrics['accuracy']:.4f}  "
+          f"macro-F1={deployed_metrics['f1_macro']:.4f}")
+
     # ---------------------------------------------------------- save ----
     print("\n5) Saving models and results")
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     joblib.dump(best_vectorizer, VECTORIZER_PATH)
-    joblib.dump(best_model, BEST_MODEL_PATH)
+    joblib.dump(deployed_model, BEST_MODEL_PATH)
 
     clf_dir = MODEL_DIR / "classifiers"
     clf_dir.mkdir(exist_ok=True)
@@ -344,8 +363,8 @@ def main() -> None:
         if config == best_config:
             joblib.dump(model, clf_dir / f"{name}.pkl")
 
-    report = classification_report(test[LABEL_COLUMN], best_test_pred, labels=LANGUAGES, digits=4)
-    cm = confusion_matrix(test[LABEL_COLUMN], best_test_pred, labels=LANGUAGES)
+    report = classification_report(test[LABEL_COLUMN], deployed_pred, labels=LANGUAGES, digits=4)
+    cm = confusion_matrix(test[LABEL_COLUMN], deployed_pred, labels=LANGUAGES)
 
     metadata = {
         "task": "language_detection",
@@ -354,14 +373,16 @@ def main() -> None:
         "representation": "TF-IDF (no word embeddings)",
         "feature_config": best_config,
         "vectorizer_settings": describe_vectorizer(best_vectorizer),
-        "selected_classifier": best_name,
+        "selected_classifier": deployed_name,
+        "probability_calibration": calibration,
         "classifier_params": {k: (v if isinstance(v, (int, float, str, bool, type(None))) else str(v))
                               for k, v in best_model.get_params().items()},
-        "supports_probabilities": hasattr(best_model, "predict_proba"),
+        "supports_probabilities": hasattr(deployed_model, "predict_proba"),
         "supported_languages": LANGUAGES,
         "selection_metric": f"validation macro F1 (tie-break: validation macro F1 on {TIE_BREAK_WORDS}-word snippets, then training time)",
         "validation_metrics": {k: float(best[k]) for k in ["accuracy", "precision_macro", "recall_macro", "f1_macro"]},
-        "test_metrics": {k: float(test_metrics[k]) for k in ["accuracy", "precision_macro", "recall_macro", "f1_macro"]},
+        "test_metrics": {k: float(deployed_metrics[k]) for k in ["accuracy", "precision_macro", "recall_macro", "f1_macro"]},
+        "test_metrics_before_calibration": {k: float(test_metrics[k]) for k in ["accuracy", "precision_macro", "recall_macro", "f1_macro"]},
         "dataset": {"train_rows": len(train), "validation_rows": len(val), "test_rows": len(test),
                     "train_csv": str(TRAIN_CSV.relative_to(TRAIN_CSV.parents[2])),
                     "test_csv": str(TEST_CSV.relative_to(TEST_CSV.parents[2]))},
@@ -378,11 +399,11 @@ def main() -> None:
      .rename(columns={"max": "best_val_f1_macro", "mean": "mean_val_f1_macro"})
      .reindex(args.configs).round(6).to_csv(RESULTS_DIR / "tfidf_config_comparison.csv"))
     (RESULTS_DIR / "classification_report.txt").write_text(
-        f"Best model: {best_name} + {best_config}\nEvaluated on held-out test set ({len(test)} rows)\n\n"
+        f"Deployed model: {deployed_name} + {best_config}\nEvaluated on held-out test set ({len(test)} rows)\n\n"
         f"{report}\nConfusion matrix (rows=true, cols=predicted, order={LANGUAGES}):\n{cm}\n",
         encoding="utf-8",
     )
-    plot_confusion_matrix(cm, f"{best_name} + {best_config} - held-out test set", RESULTS_DIR / "confusion_matrix.png")
+    plot_confusion_matrix(cm, f"{deployed_name} + {best_config} - held-out test set", RESULTS_DIR / "confusion_matrix.png")
     plot_all_confusion_matrices(
         {name: confusion_matrix(test[LABEL_COLUMN], pred, labels=LANGUAGES)
          for (config, name), (_, _, pred) in fitted.items() if config == best_config},
@@ -400,7 +421,7 @@ def main() -> None:
     print(table.sort_values("validation_f1_macro", ascending=False).to_string())
     print("\n7) Short-text robustness - test macro F1 on the first N words of each sentence")
     print(short.pivot_table(index=["features", "classifier"], columns="words", values="f1_macro").round(4).to_string())
-    print(f"\nClassification report - best model on held-out test set:\n{report}")
+    print(f"\nClassification report - deployed model ({deployed_name}) on held-out test set:\n{report}")
     print(f"Confusion matrix (rows=true {LANGUAGES}):\n{cm}")
 
 

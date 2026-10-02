@@ -1,4 +1,4 @@
-Best model: LinearSVC + tfidf_char_wb_2-5gram
+Deployed model: LinearSVC (calibrated) + tfidf_char_wb_2-5gram
 Evaluated on held-out test set (5994 rows)
 
               precision    recall  f1-score   support

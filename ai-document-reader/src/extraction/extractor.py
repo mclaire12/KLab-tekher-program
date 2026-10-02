@@ -62,7 +62,16 @@ def extract_text_from_path(path: str | Path) -> ExtractedDocument:
 
 
 def _extract_pdf(data: bytes) -> tuple[str, int, list[str]]:
-    import pymupdf
+    try:
+        import pymupdf
+    except ImportError:
+        try:
+            import fitz as pymupdf  # PyMuPDF < 1.24 only provides the old name
+        except ImportError as exc:
+            raise ImportError(
+                "PDF support needs PyMuPDF. Install it in the Python environment that runs "
+                "the app:  python -m pip install pymupdf"
+            ) from exc
 
     warnings = []
     with pymupdf.open(stream=data, filetype="pdf") as pdf:
@@ -74,7 +83,13 @@ def _extract_pdf(data: bytes) -> tuple[str, int, list[str]]:
 
 
 def _extract_docx(data: bytes) -> tuple[str, None, list[str]]:
-    import docx
+    try:
+        import docx
+    except ImportError as exc:
+        raise ImportError(
+            "DOCX support needs python-docx. Install it in the Python environment that runs "
+            "the app:  python -m pip install python-docx"
+        ) from exc
 
     document = docx.Document(io.BytesIO(data))
     parts = [p.text for p in document.paragraphs]

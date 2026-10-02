@@ -1,7 +1,7 @@
 {
   "task": "language_detection",
   "model_version": "part1-tfidf-baseline-v1",
-  "trained_at": "2026-10-02T09:50:54+00:00",
+  "trained_at": "2026-10-02T10:25:35+00:00",
   "representation": "TF-IDF (no word embeddings)",
   "feature_config": "tfidf_char_wb_2-5gram",
   "vectorizer_settings": {
@@ -20,7 +20,12 @@
     "lowercase": false,
     "vocabulary_size": 99533
   },
-  "selected_classifier": "LinearSVC",
+  "selected_classifier": "LinearSVC (calibrated)",
+  "probability_calibration": {
+    "method": "sigmoid",
+    "cv": 5,
+    "fitted_on": "training split only"
+  },
   "classifier_params": {
     "C": 1.0,
     "class_weight": null,
@@ -35,7 +40,7 @@
     "tol": 0.0001,
     "verbose": 0
   },
-  "supports_probabilities": false,
+  "supports_probabilities": true,
   "supported_languages": [
     "english",
     "french",
@@ -49,6 +54,12 @@
     "f1_macro": 1.0
   },
   "test_metrics": {
+    "accuracy": 0.9996663329996663,
+    "precision_macro": 0.9996664164581457,
+    "recall_macro": 0.9996663329996663,
+    "f1_macro": 0.9996663329892184
+  },
+  "test_metrics_before_calibration": {
     "accuracy": 0.9996663329996663,
     "precision_macro": 0.9996664164581457,
     "recall_macro": 0.9996663329996663,
@@ -76,5 +87,5 @@
     "stopwords_removed_for_language_detection": false
   },
   "random_seed": 42,
-  "scikit_learn_version": "1.7.2"
+  "scikit_learn_version": "1.9.0"
 }
