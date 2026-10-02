@@ -1,0 +1,22 @@
+word,language,training_count,plotted,reason
+hello,english,2,False,seen only 2x (< 5)
+school,english,91,True,learned vector
+bonjour,french,0,False,never seen in training text
+école,french,6,True,learned vector
+muraho,kinyarwanda,0,False,never seen in training text
+ishuri,kinyarwanda,37,True,learned vector
+government,english,115,True,learned vector
+gouvernement,french,89,True,learned vector
+leta,kinyarwanda,145,True,learned vector
+president,english,100,True,learned vector
+président,french,146,True,learned vector
+perezida,kinyarwanda,208,True,learned vector
+children,english,40,True,learned vector
+enfants,french,49,True,learned vector
+abana,kinyarwanda,141,True,learned vector
+country,english,68,True,learned vector
+pays,french,196,True,learned vector
+igihugu,kinyarwanda,115,True,learned vector
+people,english,260,True,learned vector
+gens,french,40,True,learned vector
+abantu,kinyarwanda,293,True,learned vector
