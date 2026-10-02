@@ -1,0 +1,4 @@
+setting,test_texts,both_correct,tfidf_correct_fasttext_wrong,fasttext_correct_tfidf_wrong,both_wrong
+full sentence,5994,5992,0,2,0
+first 2 words,5994,5703,39,116,136
+first 1 word,5994,5346,72,227,349

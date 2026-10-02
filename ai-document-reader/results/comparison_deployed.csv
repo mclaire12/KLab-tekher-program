@@ -1,0 +1,7 @@
+setting,representation,model,accuracy,precision_macro,recall_macro,f1_macro
+full sentence,TF-IDF,tfidf_char_wb_2-5gram + LinearSVC (calibrated),0.999666,0.999666,0.999666,0.999666
+full sentence,FastText,fasttext_skipgram_ng2-5_mean + KNN,1.0,1.0,1.0,1.0
+first 2 words,TF-IDF,tfidf_char_wb_2-5gram + LinearSVC (calibrated),0.957958,0.958769,0.957958,0.958088
+first 2 words,FastText,fasttext_skipgram_ng2-5_mean + KNN,0.970804,0.971081,0.970804,0.970842
+first 1 word,TF-IDF,tfidf_char_wb_2-5gram + LinearSVC (calibrated),0.903904,0.906596,0.903904,0.904347
+first 1 word,FastText,fasttext_skipgram_ng2-5_mean + KNN,0.929763,0.930222,0.929763,0.929852

@@ -1,0 +1,53 @@
+Same data split for both representations: {'train': '9119e708d3ce726b', 'validation': '298416300f105cd3', 'test': '918d6f2a645d8230'}
+Compared representations: tfidf_char_wb_2-5gram  vs  fasttext_skipgram_ng2-5_mean
+
+1) Loading and validating dataset
+  train: 23973 rows  french=7991  kinyarwanda=7991  english=7991
+  test: 5994 rows  french=1998  kinyarwanda=1998  english=1998
+2) Stratified split of train.csv -> train / validation (80%/20%), seed=42
+  train=19178  validation=4795  test=5994  split fingerprint={'train': '9119e708d3ce726b', 'validation': '298416300f105cd3', 'test': '918d6f2a645d8230'}
+Per classifier, full test set (difference = FastText - TF-IDF):
+metric              accuracy  precision_macro  recall_macro  f1_macro
+classifier                                                           
+KNN                   0.0040           0.0040        0.0040    0.0040
+LinearSVC             0.0003           0.0003        0.0003    0.0003
+LogisticRegression    0.0002           0.0002        0.0002    0.0002
+RandomForest          0.0003           0.0003        0.0003    0.0003
+
+Macro F1, full test set:
+        classifier  tfidf  fasttext  difference
+LogisticRegression 0.9997    0.9998      0.0002
+         LinearSVC 0.9997    1.0000      0.0003
+      RandomForest 0.9995    0.9998      0.0003
+               KNN 0.9960    1.0000      0.0040
+
+Macro F1 by number of words (difference = FastText - TF-IDF):
+words                    1       2       3       5
+classifier                                        
+KNN                 0.0022  0.0295  0.0302  0.0160
+LinearSVC           0.0254  0.0114  0.0086  0.0018
+LogisticRegression  0.0368  0.0143  0.0098  0.0022
+RandomForest        0.0718  0.0330  0.0178  0.0042
+
+Deployed models:
+      setting representation                                          model  accuracy  precision_macro  recall_macro  f1_macro
+full sentence         TF-IDF tfidf_char_wb_2-5gram + LinearSVC (calibrated)    0.9997           0.9997        0.9997    0.9997
+full sentence       FastText             fasttext_skipgram_ng2-5_mean + KNN    1.0000           1.0000        1.0000    1.0000
+first 2 words         TF-IDF tfidf_char_wb_2-5gram + LinearSVC (calibrated)    0.9580           0.9588        0.9580    0.9581
+first 2 words       FastText             fasttext_skipgram_ng2-5_mean + KNN    0.9708           0.9711        0.9708    0.9708
+ first 1 word         TF-IDF tfidf_char_wb_2-5gram + LinearSVC (calibrated)    0.9039           0.9066        0.9039    0.9043
+ first 1 word       FastText             fasttext_skipgram_ng2-5_mean + KNN    0.9298           0.9302        0.9298    0.9299
+
+Error analysis:
+      setting  test_texts  both_correct  tfidf_correct_fasttext_wrong  fasttext_correct_tfidf_wrong  both_wrong
+full sentence        5994          5992                             0                             2           0
+first 2 words        5994          5703                            39                           116         136
+ first 1 word        5994          5346                            72                           227         349
+
+Words never seen in training (share of test tokens):
+   language  test_tokens  unseen_in_training_text  no_own_fasttext_vector
+    english        38728                   0.0735                  0.1087
+     french        38916                   0.0851                  0.1273
+kinyarwanda        36781                   0.1511                  0.2035
+
+Saved comparison files to C:\Users\marie\Desktop\K Lab\ai-document-reader\results

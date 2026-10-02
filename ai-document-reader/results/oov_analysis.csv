@@ -1,0 +1,4 @@
+language,test_tokens,unseen_in_training_text,no_own_fasttext_vector
+english,38728,0.073487,0.108681
+french,38916,0.085132,0.127274
+kinyarwanda,36781,0.151083,0.203475

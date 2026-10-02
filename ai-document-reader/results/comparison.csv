@@ -1,0 +1,17 @@
+classifier,tfidf_features,fasttext_features,metric,tfidf,fasttext,difference
+LogisticRegression,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,accuracy,0.999666,0.999833,0.000167
+LogisticRegression,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,precision_macro,0.999666,0.999833,0.000167
+LogisticRegression,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,recall_macro,0.999666,0.999833,0.000167
+LogisticRegression,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,f1_macro,0.999666,0.999833,0.000167
+LinearSVC,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,accuracy,0.999666,1.0,0.000334
+LinearSVC,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,precision_macro,0.999666,1.0,0.000334
+LinearSVC,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,recall_macro,0.999666,1.0,0.000334
+LinearSVC,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,f1_macro,0.999666,1.0,0.000334
+RandomForest,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,accuracy,0.999499,0.999833,0.000334
+RandomForest,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,precision_macro,0.9995,0.999833,0.000333
+RandomForest,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,recall_macro,0.999499,0.999833,0.000334
+RandomForest,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,f1_macro,0.999499,0.999833,0.000334
+KNN,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,accuracy,0.995996,1.0,0.004004
+KNN,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,precision_macro,0.996001,1.0,0.003999
+KNN,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,recall_macro,0.995996,1.0,0.004004
+KNN,tfidf_char_wb_2-5gram,fasttext_skipgram_ng2-5_mean,f1_macro,0.995997,1.0,0.004003

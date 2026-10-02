@@ -1,0 +1,942 @@
+setting,case,text,true_language,tfidf_prediction,fasttext_prediction
+full sentence,"FastText correct, TF-IDF wrong",ni ukwica intellectuellement generation yose,kinyarwanda,french,kinyarwanda
+full sentence,"FastText correct, TF-IDF wrong",jennifer aniston et steve carrell dans la série the morning show,french,english,french
+first 2 words,"TF-IDF correct, FastText wrong",pour baba,french,french,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",kofi interrupted,english,english,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",le but,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",a part,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",a cause,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",jasper philipsen,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",christian a,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",joseph rev,english,english,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",simon gruber,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",ir hasigaye,kinyarwanda,kinyarwanda,french
+first 2 words,"TF-IDF correct, FastText wrong",the rosé,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",persona scramble,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",dr alassane,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",rachel true,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",jacob blake,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",or rien,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",si daniel,french,french,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",vizio tvs,english,english,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",tinya figured,english,english,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",t n,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",peter wes,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",marius gilbert,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",malaka hendela,english,english,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",lakshmi balachandra,french,french,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",angie willhite,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",kurt delbene,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",ensign beckett,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",le but,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",on commence,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",lael brainard,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",sinn fein,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",yakubu explained,english,english,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",madame tussauds,english,english,french
+first 2 words,"TF-IDF correct, FastText wrong",l'ambassadeur shingiro,french,french,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",the ihsaa,english,english,kinyarwanda
+first 2 words,"TF-IDF correct, FastText wrong",le but,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",pieter timmermans,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",mm poutine,french,french,english
+first 2 words,"TF-IDF correct, FastText wrong",microsoft a,french,french,english
+first 2 words,"FastText correct, TF-IDF wrong",leblanc on,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",austrian police,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",mr lawson,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",wica iteka,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",minisitiri louise,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",teacher mpamire,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",rayon sports,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",perezida donald,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",marco tedeschi,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",on mise,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",on paye,french,kinyarwanda,french
+first 2 words,"FastText correct, TF-IDF wrong",benoît magimel,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",intore tuyisenge,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",leta y'u,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",a large,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",sallon ye,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",beats ne,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",on renforce,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",mark lawrenson,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",mr ichungwa,english,kinyarwanda,english
+first 2 words,"FastText correct, TF-IDF wrong",president paul,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",jean michel,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",godiberth uwimana,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",inscriptions soit,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",mola apokeya,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",bishop verryn,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",eric manywa,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",zimbabwe congress,english,kinyarwanda,english
+first 2 words,"FastText correct, TF-IDF wrong",charly na,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",robbie labuda,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",a travers,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",ca a,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",patrick bédard,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",papa francis,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",perezida donald,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",denise m,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",sacha pole,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",yong min,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",a visit,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",akatsuki sn,french,kinyarwanda,french
+first 2 words,"FastText correct, TF-IDF wrong",mme azoulay,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",dr frank,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",mon objectif,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",haleema wo,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",millennium management,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",healing ihamagawe,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",monique has,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",macron we,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",garcia lebron,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",goldenberg remarque,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",karakontie's name,english,kinyarwanda,english
+first 2 words,"FastText correct, TF-IDF wrong",uwo gentil,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",commit no,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",joyce nzere,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",tokyo planche,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",fred barafinda,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",summer courses,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",n b,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",iyi discour,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",good hanyuma,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",viruses on,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",el othmani,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",las vegas,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",as part,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",ms sánchez,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",le fuzzing,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",dr charles,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",review journal,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",ardern let,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",pacient bizimana,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",insufficient hours,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",ce teasing,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",hazgui a,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",sam johnson,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",bravo infatino,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",leta y'u,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",brown nelson,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",crude oil,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",hon julius,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",claver gatete,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",mu merkel,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",lionel martin,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",nshuti dominique,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",ndayambaje godefroid,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",debré yasubije,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",charlotte mufumbi,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",maj dr,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",clémence botino,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",gustave watowe,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",fatou bensouda,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",dr amit,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",i r,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",oooh imana,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",pasiteri desire,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",queen noloyiso,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",audiences are,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",jimmy mulisa,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",apr fc,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",roland héguy,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",abanyamideli designers,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",i deserve,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",félix tshisekedi,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",thierry yari,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",adrien misigaro,kinyarwanda,french,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",marco asensio,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",u s,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",tymebank's unique,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",iwacu fashion,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",advancement quilters,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",u s,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",ancient civilizations,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",hello warakosheje,kinyarwanda,english,kinyarwanda
+first 2 words,"FastText correct, TF-IDF wrong",nathalie guilmot,french,english,french
+first 2 words,"FastText correct, TF-IDF wrong",premier gladys,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",los angeles,english,french,english
+first 2 words,"FastText correct, TF-IDF wrong",enfin beligh,french,english,french
+first 2 words,both wrong,kristen souvlis,english,french,french
+first 2 words,both wrong,port ida,french,english,kinyarwanda
+first 2 words,both wrong,nelson mandela,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,on constate,french,english,english
+first 2 words,both wrong,mr eazi,kinyarwanda,english,english
+first 2 words,both wrong,novembre par,kinyarwanda,french,french
+first 2 words,both wrong,antwerp léopold,french,english,english
+first 2 words,both wrong,paul hamilton,english,french,kinyarwanda
+first 2 words,both wrong,marina rollman,french,english,english
+first 2 words,both wrong,nbc cbs,french,english,english
+first 2 words,both wrong,mars par,kinyarwanda,french,french
+first 2 words,both wrong,michael roux,kinyarwanda,english,french
+first 2 words,both wrong,joe fortemose,kinyarwanda,english,english
+first 2 words,both wrong,octobre par,kinyarwanda,french,french
+first 2 words,both wrong,tadej pogacar,french,english,kinyarwanda
+first 2 words,both wrong,bof bof,french,english,english
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,aouadi ana,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,english championship,french,english,english
+first 2 words,both wrong,louisville ky,english,french,french
+first 2 words,both wrong,sri lanka,english,kinyarwanda,kinyarwanda
+first 2 words,both wrong,haouani a,french,english,english
+first 2 words,both wrong,fred we,kinyarwanda,english,english
+first 2 words,both wrong,first lady,kinyarwanda,english,english
+first 2 words,both wrong,icu use,english,kinyarwanda,kinyarwanda
+first 2 words,both wrong,meek rowland,kinyarwanda,english,english
+first 2 words,both wrong,filed under,kinyarwanda,english,english
+first 2 words,both wrong,ayman odeh,french,english,english
+first 2 words,both wrong,yego your,kinyarwanda,english,english
+first 2 words,both wrong,on a,french,english,english
+first 2 words,both wrong,a hendaye,french,english,english
+first 2 words,both wrong,friedman a,french,english,english
+first 2 words,both wrong,ben nayef,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,urban brussels,french,english,english
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,international policy,kinyarwanda,english,english
+first 2 words,both wrong,mathias flückiger,french,english,english
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,a kyalami,english,kinyarwanda,french
+first 2 words,both wrong,steven mnuchin,french,english,english
+first 2 words,both wrong,le marechal,english,french,french
+first 2 words,both wrong,rentautobus lets,english,french,french
+first 2 words,both wrong,fela kuti,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,ravens fans,english,french,french
+first 2 words,both wrong,noah patenaude,english,french,french
+first 2 words,both wrong,otto vianney,kinyarwanda,english,english
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,thomas drouet,french,english,english
+first 2 words,both wrong,cognac whisky,french,english,english
+first 2 words,both wrong,uitenhage police,english,french,french
+first 2 words,both wrong,alanna brown,kinyarwanda,english,english
+first 2 words,both wrong,hakym reagan,kinyarwanda,english,english
+first 2 words,both wrong,gatete jotham,kinyarwanda,english,english
+first 2 words,both wrong,vi hilbert,english,french,french
+first 2 words,both wrong,grand viking,french,english,english
+first 2 words,both wrong,prophet eric,kinyarwanda,english,french
+first 2 words,both wrong,maharani jindan,english,kinyarwanda,kinyarwanda
+first 2 words,both wrong,juillet par,kinyarwanda,french,french
+first 2 words,both wrong,zamir a,french,english,english
+first 2 words,both wrong,carlos ghosn,french,english,english
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,dr françis,kinyarwanda,french,french
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,orange belgium,french,english,english
+first 2 words,both wrong,dr maura,english,french,kinyarwanda
+first 2 words,both wrong,mohamed kane,french,english,kinyarwanda
+first 2 words,both wrong,laura doesn't,english,french,french
+first 2 words,both wrong,christine quinn,english,french,french
+first 2 words,both wrong,novembre par,kinyarwanda,french,french
+first 2 words,both wrong,islamic state,kinyarwanda,english,english
+first 2 words,both wrong,manitoulin transport,english,french,french
+first 2 words,both wrong,pastor valdeci,kinyarwanda,english,english
+first 2 words,both wrong,donald trump,french,english,english
+first 2 words,both wrong,m r,kinyarwanda,english,english
+first 2 words,both wrong,janice kerr,french,english,english
+first 2 words,both wrong,zydus cadila,english,french,french
+first 2 words,both wrong,akinwumi adesina,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,abang johari,english,kinyarwanda,kinyarwanda
+first 2 words,both wrong,joe biden,french,english,english
+first 2 words,both wrong,imane rharbi,english,kinyarwanda,kinyarwanda
+first 2 words,both wrong,m harison,french,english,english
+first 2 words,both wrong,nikki newman,english,kinyarwanda,kinyarwanda
+first 2 words,both wrong,novembre par,kinyarwanda,french,french
+first 2 words,both wrong,jean pierre,kinyarwanda,french,french
+first 2 words,both wrong,belay begashaw,kinyarwanda,english,english
+first 2 words,both wrong,fake news,french,english,english
+first 2 words,both wrong,hadi janvier,kinyarwanda,french,french
+first 2 words,both wrong,dead by,french,english,english
+first 2 words,both wrong,posted by,kinyarwanda,english,english
+first 2 words,both wrong,plus brady,english,french,french
+first 2 words,both wrong,fc copenhague,french,english,kinyarwanda
+first 2 words,both wrong,chaima marwan,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,haim saban,french,english,english
+first 2 words,both wrong,habibatou babou,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,hopeson dan,kinyarwanda,french,english
+first 2 words,both wrong,austin barnes,english,french,french
+first 2 words,both wrong,on a,french,english,english
+first 2 words,both wrong,brig gen,kinyarwanda,english,english
+first 2 words,both wrong,on me,french,english,english
+first 2 words,both wrong,marilyne ziss,french,english,english
+first 2 words,both wrong,jagan chapagain,french,english,english
+first 2 words,both wrong,mcmorris ni,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,novembre par,kinyarwanda,french,french
+first 2 words,both wrong,fernando d,french,english,english
+first 2 words,both wrong,engil engenharia,kinyarwanda,french,english
+first 2 words,both wrong,pokemon a,french,english,english
+first 2 words,both wrong,a noter,french,english,english
+first 2 words,both wrong,allen si,kinyarwanda,french,french
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,lionel sentore,kinyarwanda,english,english
+first 2 words,both wrong,december at,kinyarwanda,english,english
+first 2 words,both wrong,praise again,kinyarwanda,english,english
+first 2 words,both wrong,congo kinshasa,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,january at,kinyarwanda,english,english
+first 2 words,both wrong,while en,english,french,french
+first 2 words,both wrong,m teich,french,english,english
+first 2 words,both wrong,ludovico carlino,kinyarwanda,english,english
+first 2 words,both wrong,u haul,english,french,kinyarwanda
+first 2 words,both wrong,gabiro the,kinyarwanda,english,english
+first 2 words,both wrong,read more,kinyarwanda,english,english
+first 2 words,both wrong,sata tamini,french,kinyarwanda,kinyarwanda
+first 2 words,both wrong,thomas thabane,kinyarwanda,english,english
+first 2 words,both wrong,alhaji yakasai,english,kinyarwanda,kinyarwanda
+first 2 words,both wrong,donald trump,french,english,english
+first 2 words,both wrong,connection close,kinyarwanda,english,english
+first 2 words,both wrong,on attend,french,english,english
+first 2 words,both wrong,geert wilders,kinyarwanda,english,english
+first 2 words,both wrong,hicham al,french,english,english
+first 2 words,both wrong,emelia brobbey,french,english,english
+first 2 words,both wrong,august at,kinyarwanda,english,english
+first 2 words,both wrong,the voice,french,english,english
+first 2 words,both wrong,redanian intelligence,french,english,english
+first 2 words,both wrong,me anges,french,english,english
+first 2 words,both wrong,andy schleck,french,english,english
+first 1 word,"TF-IDF correct, FastText wrong",graham,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",read,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",ex,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",alima,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",ugb,french,french,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",coronavirus,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",sufferfest,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",arrangements,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",al,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",disclaimer,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",brioche,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",christian,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",simon,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",barb,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",sgt,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",persona,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",via,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",donald,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",patrick,french,french,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",joint,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",rachel,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",fela,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",marieke,french,french,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",jacob,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",orion,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",ottawa,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",karakontie's,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",rose,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",channels,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",semiahmoo,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",t,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",ben,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",dr,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",ryanair,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",salisbury,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",marius,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",lakshmi,french,french,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",manitoulin,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",ben,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",phase,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",malaluan,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",dr,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",culver,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",joe,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",baby,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",click,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",filippo,french,french,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",vipond,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",chaima,french,french,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",foto,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",construction,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",lael,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",paul,french,french,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",orix,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",madame,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",fccpc,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",dr,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",pieter,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",onmeje,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",johanna,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",alhaji,english,english,kinyarwanda
+first 1 word,"TF-IDF correct, FastText wrong",elisabeth,english,english,french
+first 1 word,"TF-IDF correct, FastText wrong",emelia,french,french,english
+first 1 word,"TF-IDF correct, FastText wrong",trump,english,english,french
+first 1 word,"FastText correct, TF-IDF wrong",austrian,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",joy,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",brown,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",saa,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",trump,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",simpson,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",diane,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dore,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",marco,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",car,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",chris,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",coronavirus,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",intore,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",joe,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",isomere,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",pre,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",antoine,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",hera,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",leta,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",depite,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",politicians,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",despite,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",bene,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",joy,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",australian,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",changer,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",afin,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",cp,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",due,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",inscriptions,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",mola,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",bishop,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",eric,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",nine,english,kinyarwanda,english
+first 1 word,"FastText correct, TF-IDF wrong",car,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",boo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",rossy,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",pascal,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",robbie,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",ben,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",edrisa,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",raporo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",raporo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",polisi,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",chris,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",opéras,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",patrick,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",adepr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",leta,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",busingye,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",illinois,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",francis,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dolan,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",tweetait,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",passengers,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",danny,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",san,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",aimable,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",leta,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",obama,english,kinyarwanda,english
+first 1 word,"FastText correct, TF-IDF wrong",depite,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",polisi,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",martin,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",aimable,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",designs,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",igice,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",mon,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",tandis,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",cognac,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",millennium,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",perezidante,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",mon,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",ignorant,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",transportation,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",mission,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",mwitende,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",forces,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",marcher,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",petersen,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",dolbec,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",dust,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",gatete,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",commit,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",nec,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",imbuto,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",grand,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",bob,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",blunt,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",colleagues,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",moto,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",midsommar,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",eye,english,kinyarwanda,english
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",australian,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",derek,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",badege,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",sugar,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",peter,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",mohamed,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",gatete,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",ingingo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",senateri,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",retail,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",mullen,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",n,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",n,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",london,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",christine,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",ebola,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",ingingo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",san,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",tu,french,kinyarwanda,french
+first 1 word,"FastText correct, TF-IDF wrong",donald,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",hervé,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",danieli,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",las,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",michel,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",norton,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",prime,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",dore,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",gilfillan,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",dr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dusase,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",rapport,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",let,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",smitten,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",twifuje,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",despite,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",insufficient,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",once,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",fazil,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",adventurous,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",marriott,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",savio,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",temperatures,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",gen,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",multi,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",paul,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",ngwino,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",frank,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",sam,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",alain,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",rgb,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",asipirine,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",bravo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",leta,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dubai,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",regardless,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",brown,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",sputnik,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",fpr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",crude,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",registration,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",despite,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",claver,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",austin,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",wo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",bruno,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",peter,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",soma,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",tu,french,kinyarwanda,french
+first 1 word,"FastText correct, TF-IDF wrong",future,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",marilyne,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",xuju,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",visi,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",paul,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",decades,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",raporo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",maj,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",paul,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dufite,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",atiâ,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",attendees,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",fans,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",fatou,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",san,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",dr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",gaby,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",once,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",rpf,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",gato,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",senateri,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",fpr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",bob,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",cigarroa,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",lucea,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",pasiteri,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",queen,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",car,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",pasiteri,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",jimmy,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",apr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",darren,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",afande,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",read,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",pasiteri,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",chris,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",theo,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",once,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",notons,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",civil,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",dore,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",polisi,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",dr,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",details,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",tu,french,kinyarwanda,french
+first 1 word,"FastText correct, TF-IDF wrong",donald,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",servisi,kinyarwanda,french,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",covax,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",marco,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",rpf,kinyarwanda,english,kinyarwanda
+first 1 word,"FastText correct, TF-IDF wrong",advancement,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",interest,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",nathalie,french,english,french
+first 1 word,"FastText correct, TF-IDF wrong",annamalai,english,french,english
+first 1 word,"FastText correct, TF-IDF wrong",inseko,kinyarwanda,english,kinyarwanda
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,kristen,english,french,kinyarwanda
+first 1 word,both wrong,leblanc,english,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,filip,kinyarwanda,french,english
+first 1 word,both wrong,philippe,kinyarwanda,french,french
+first 1 word,both wrong,sophie,english,french,french
+first 1 word,both wrong,wica,kinyarwanda,english,english
+first 1 word,both wrong,boss,kinyarwanda,english,english
+first 1 word,both wrong,damien,kinyarwanda,french,french
+first 1 word,both wrong,kofi,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,se,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,nelson,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,oms,kinyarwanda,english,english
+first 1 word,both wrong,teacher,kinyarwanda,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,we,kinyarwanda,english,english
+first 1 word,both wrong,aime,kinyarwanda,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,mr,kinyarwanda,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,eustachio,french,english,english
+first 1 word,both wrong,novembre,kinyarwanda,french,french
+first 1 word,both wrong,antwerp,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,gardai,english,french,french
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,benoît,french,english,english
+first 1 word,both wrong,berlin,french,english,kinyarwanda
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,paul,english,french,kinyarwanda
+first 1 word,both wrong,marina,french,english,english
+first 1 word,both wrong,nbc,french,english,english
+first 1 word,both wrong,mars,kinyarwanda,english,french
+first 1 word,both wrong,michael,kinyarwanda,english,english
+first 1 word,both wrong,joe,kinyarwanda,french,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,octobre,kinyarwanda,french,french
+first 1 word,both wrong,tadej,french,english,kinyarwanda
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,bof,french,english,english
+first 1 word,both wrong,excesses,english,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,vossen,english,french,french
+first 1 word,both wrong,jasper,french,english,english
+first 1 word,both wrong,sallon,kinyarwanda,english,french
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,beats,french,english,english
+first 1 word,both wrong,durham,english,french,french
+first 1 word,both wrong,english,french,english,english
+first 1 word,both wrong,mwambiwa,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,louisville,english,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,sri,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,arnie,english,french,french
+first 1 word,both wrong,haouani,french,english,kinyarwanda
+first 1 word,both wrong,president,kinyarwanda,english,english
+first 1 word,both wrong,fred,kinyarwanda,english,english
+first 1 word,both wrong,first,kinyarwanda,english,english
+first 1 word,both wrong,godiberth,kinyarwanda,english,english
+first 1 word,both wrong,ir,kinyarwanda,french,french
+first 1 word,both wrong,barnette,english,french,french
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,icu,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,meek,kinyarwanda,english,english
+first 1 word,both wrong,images,english,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,filed,kinyarwanda,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,ayman,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,vecciarelli,kinyarwanda,french,french
+first 1 word,both wrong,zimbabwe,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,fabrice,kinyarwanda,french,french
+first 1 word,both wrong,charly,kinyarwanda,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,friedman,french,english,english
+first 1 word,both wrong,kabul,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,urban,french,english,english
+first 1 word,both wrong,seychelles,english,french,french
+first 1 word,both wrong,dr,french,english,kinyarwanda
+first 1 word,both wrong,amakhosi,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,hydrogen,english,french,french
+first 1 word,both wrong,moses,english,french,french
+first 1 word,both wrong,marines,kinyarwanda,french,french
+first 1 word,both wrong,international,kinyarwanda,english,english
+first 1 word,both wrong,mathias,french,english,english
+first 1 word,both wrong,communication,english,french,french
+first 1 word,both wrong,ethan,french,english,english
+first 1 word,both wrong,lissu,kinyarwanda,french,french
+first 1 word,both wrong,denise,english,french,french
+first 1 word,both wrong,prof,kinyarwanda,english,english
+first 1 word,both wrong,yokohama,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,loki,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,steven,french,english,english
+first 1 word,both wrong,le,english,french,french
+first 1 word,both wrong,rentautobus,english,french,french
+first 1 word,both wrong,yong,kinyarwanda,english,english
+first 1 word,both wrong,ravens,english,french,french
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,rac,kinyarwanda,english,french
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,se,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,i,kinyarwanda,english,english
+first 1 word,both wrong,akatsuki,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,thx,kinyarwanda,english,english
+first 1 word,both wrong,otto,kinyarwanda,english,english
+first 1 word,both wrong,allen,kinyarwanda,english,english
+first 1 word,both wrong,doom,kinyarwanda,english,english
+first 1 word,both wrong,thomas,french,english,english
+first 1 word,both wrong,or,french,english,english
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,gwen,english,french,kinyarwanda
+first 1 word,both wrong,stockholm,french,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,haleema,kinyarwanda,english,english
+first 1 word,both wrong,jeffrey,french,english,english
+first 1 word,both wrong,healing,kinyarwanda,english,english
+first 1 word,both wrong,monique,english,french,french
+first 1 word,both wrong,macron,kinyarwanda,french,french
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,anyway,kinyarwanda,english,english
+first 1 word,both wrong,tables,english,french,french
+first 1 word,both wrong,goldenberg,french,english,english
+first 1 word,both wrong,quid,french,english,english
+first 1 word,both wrong,sakudya,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,ngulube,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,camille,kinyarwanda,french,french
+first 1 word,both wrong,uitenhage,english,french,french
+first 1 word,both wrong,alanna,kinyarwanda,french,english
+first 1 word,both wrong,hakym,kinyarwanda,english,english
+first 1 word,both wrong,vi,english,french,french
+first 1 word,both wrong,bruce,kinyarwanda,english,english
+first 1 word,both wrong,tsenengamu,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,joyce,kinyarwanda,french,french
+first 1 word,both wrong,miss,kinyarwanda,english,english
+first 1 word,both wrong,maya,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,ladies,english,french,french
+first 1 word,both wrong,vizio,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,instruction,french,english,english
+first 1 word,both wrong,iran,kinyarwanda,english,english
+first 1 word,both wrong,tokyo,french,english,english
+first 1 word,both wrong,prophet,kinyarwanda,french,french
+first 1 word,both wrong,maharani,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,juillet,kinyarwanda,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,tinya,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,zamir,french,english,kinyarwanda
+first 1 word,both wrong,shafa,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,carlos,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,fred,kinyarwanda,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,orange,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,we,kinyarwanda,english,english
+first 1 word,both wrong,toilet,english,french,french
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,laura,english,french,french
+first 1 word,both wrong,malaka,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,novembre,kinyarwanda,french,french
+first 1 word,both wrong,uribe,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,lionel,french,english,english
+first 1 word,both wrong,varonis,english,french,french
+first 1 word,both wrong,islamic,kinyarwanda,english,english
+first 1 word,both wrong,olivier,kinyarwanda,french,french
+first 1 word,both wrong,good,kinyarwanda,english,english
+first 1 word,both wrong,pastor,kinyarwanda,english,english
+first 1 word,both wrong,victor,kinyarwanda,english,english
+first 1 word,both wrong,viruses,english,french,french
+first 1 word,both wrong,vanessa,english,french,french
+first 1 word,both wrong,angie,english,french,french
+first 1 word,both wrong,manager,french,english,english
+first 1 word,both wrong,hagee,kinyarwanda,english,english
+first 1 word,both wrong,m,kinyarwanda,english,english
+first 1 word,both wrong,angenette,english,french,french
+first 1 word,both wrong,zydus,english,french,french
+first 1 word,both wrong,anyway,kinyarwanda,english,english
+first 1 word,both wrong,akinwumi,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,abang,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,perben,french,english,english
+first 1 word,both wrong,attentive,french,english,english
+first 1 word,both wrong,kurt,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,he,kinyarwanda,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,aberdeenshire,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,ensign,english,french,french
+first 1 word,both wrong,imane,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,m,french,english,english
+first 1 word,both wrong,bernard,kinyarwanda,english,french
+first 1 word,both wrong,vincent,kinyarwanda,french,french
+first 1 word,both wrong,nikki,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,novembre,kinyarwanda,french,french
+first 1 word,both wrong,pacient,kinyarwanda,french,french
+first 1 word,both wrong,jean,kinyarwanda,french,french
+first 1 word,both wrong,onze,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,belay,kinyarwanda,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,hazgui,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,fake,french,english,english
+first 1 word,both wrong,yvan,kinyarwanda,english,french
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,cenco,kinyarwanda,french,english
+first 1 word,both wrong,hadi,kinyarwanda,english,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,renaud,english,french,french
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,dead,french,english,english
+first 1 word,both wrong,merci,kinyarwanda,french,french
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,posted,kinyarwanda,english,english
+first 1 word,both wrong,christine,kinyarwanda,french,english
+first 1 word,both wrong,plus,english,french,french
+first 1 word,both wrong,kinesis,french,english,english
+first 1 word,both wrong,fc,french,english,kinyarwanda
+first 1 word,both wrong,nemet,english,french,french
+first 1 word,both wrong,we,kinyarwanda,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,alpha,english,french,french
+first 1 word,both wrong,haim,french,english,english
+first 1 word,both wrong,modi,english,french,french
+first 1 word,both wrong,we,kinyarwanda,english,english
+first 1 word,both wrong,chimpreport,kinyarwanda,english,english
+first 1 word,both wrong,moise,kinyarwanda,french,french
+first 1 word,both wrong,habibatou,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,m,french,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,lausd,english,french,french
+first 1 word,both wrong,hopeson,kinyarwanda,english,english
+first 1 word,both wrong,permanent,english,french,french
+first 1 word,both wrong,mazuz,english,french,kinyarwanda
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,figures,english,french,french
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,lionel,french,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,dominique,kinyarwanda,french,french
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,yakubu,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,brig,kinyarwanda,english,english
+first 1 word,both wrong,reg,kinyarwanda,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,police,kinyarwanda,english,english
+first 1 word,both wrong,debré,kinyarwanda,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,luiz,english,french,french
+first 1 word,both wrong,jagan,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,charlotte,kinyarwanda,french,french
+first 1 word,both wrong,mcmorris,french,english,english
+first 1 word,both wrong,alex,kinyarwanda,english,english
+first 1 word,both wrong,novembre,kinyarwanda,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,psa,english,french,french
+first 1 word,both wrong,john,kinyarwanda,french,english
+first 1 word,both wrong,fernando,french,english,english
+first 1 word,both wrong,yann,french,kinyarwanda,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,engil,kinyarwanda,french,english
+first 1 word,both wrong,gustave,kinyarwanda,english,english
+first 1 word,both wrong,we,kinyarwanda,english,english
+first 1 word,both wrong,pokemon,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,allen,kinyarwanda,english,english
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,lionel,kinyarwanda,english,english
+first 1 word,both wrong,december,kinyarwanda,english,english
+first 1 word,both wrong,praise,kinyarwanda,french,english
+first 1 word,both wrong,we,kinyarwanda,english,english
+first 1 word,both wrong,i,kinyarwanda,english,english
+first 1 word,both wrong,congo,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,granite,english,french,french
+first 1 word,both wrong,oooh,kinyarwanda,english,english
+first 1 word,both wrong,january,kinyarwanda,english,english
+first 1 word,both wrong,audiences,english,french,french
+first 1 word,both wrong,m,french,english,english
+first 1 word,both wrong,ludovico,kinyarwanda,english,english
+first 1 word,both wrong,u,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,roland,french,english,english
+first 1 word,both wrong,idem,french,english,english
+first 1 word,both wrong,sata,french,english,kinyarwanda
+first 1 word,both wrong,thomas,kinyarwanda,english,english
+first 1 word,both wrong,christine,kinyarwanda,french,english
+first 1 word,both wrong,tzion,french,english,english
+first 1 word,both wrong,a,french,english,english
+first 1 word,both wrong,thierry,kinyarwanda,english,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,mm,french,english,english
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,connection,kinyarwanda,english,english
+first 1 word,both wrong,adrien,kinyarwanda,french,french
+first 1 word,both wrong,no,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,peace,kinyarwanda,english,english
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,banco,french,english,kinyarwanda
+first 1 word,both wrong,denis,kinyarwanda,french,french
+first 1 word,both wrong,u,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,police,kinyarwanda,english,english
+first 1 word,both wrong,agnes,kinyarwanda,french,french
+first 1 word,both wrong,si,french,kinyarwanda,kinyarwanda
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,geert,kinyarwanda,english,english
+first 1 word,both wrong,malabo,french,english,kinyarwanda
+first 1 word,both wrong,u,english,kinyarwanda,kinyarwanda
+first 1 word,both wrong,ancient,english,french,french
+first 1 word,both wrong,hicham,french,english,english
+first 1 word,both wrong,anywhere,kinyarwanda,english,english
+first 1 word,both wrong,hello,kinyarwanda,english,english
+first 1 word,both wrong,aime,kinyarwanda,french,french
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,august,kinyarwanda,french,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,cnn,kinyarwanda,french,english
+first 1 word,both wrong,premier,english,french,french
+first 1 word,both wrong,the,french,english,english
+first 1 word,both wrong,redanian,french,english,english
+first 1 word,both wrong,on,french,english,english
+first 1 word,both wrong,me,french,english,english
+first 1 word,both wrong,andy,french,english,english
