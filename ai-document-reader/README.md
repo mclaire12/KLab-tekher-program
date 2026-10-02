@@ -1,9 +1,14 @@
-# AI Document Reader — NLP Baseline Version
+# AI Document Reader — TF-IDF Baseline and Word-Embedding Improvement
 
-> **Part 1 of 2 — TF-IDF baseline.** Upload a PDF, DOCX or TXT document; the
-> system extracts and cleans the text, detects its language (English / French /
-> Kinyarwanda) with a TF-IDF + machine-learning classifier, summarises it,
-> answers questions about it and reads it aloud.
+> Upload a PDF, DOCX or TXT document; the system extracts and cleans the text,
+> detects its language (English / French / Kinyarwanda), summarises it, answers
+> questions about it and reads it aloud.
+>
+> * **Part 1 — TF-IDF baseline:** language detection with a sparse TF-IDF
+>   representation + traditional classifiers (§4–§13).
+> * **Part 2 — Word-embedding improvement:** the same experiment with **FastText
+>   word embeddings**, compared with Part 1 on the same data, split and metrics
+>   (§19). Both models are kept and can be selected in the app.
 
 ```
                       AI DOCUMENT READER
@@ -19,8 +24,9 @@
           ┌───────────────────┼─────────────────────────┐
           ▼                   ▼                         ▼
   Language Detection       Summary                     Q&A
-  TF-IDF + ML classifier   extractive (frequency)      TF-IDF passage retrieval
-  ★ main ML task ★         or pretrained DistilBART    + cosine similarity
+  TF-IDF (Part 1) or       extractive (frequency)      patterns + TF-IDF retrieval
+  FastText (Part 2) + ML   or pretrained DistilBART    + pretrained extractive QA
+  ★ main ML task ★
           │                   │                         │
           └───────────────────┼─────────────────────────┘
                               ▼
@@ -53,6 +59,7 @@
 17. [Limitations](#17-limitations)
 18. [Future improvements](#18-future-improvements)
 19. [Part 2 — Word Embedding Improvement](#19-part-2--word-embedding-improvement)
+    — [results](#1910-results) · [before/after](#1911-beforeafter-comparison) · [error analysis](#1912-error-analysis)
 20. [How the Machine Learning Works](#20-how-the-machine-learning-works)
 
 ---
@@ -81,20 +88,21 @@ machine-learning baseline that can later be compared with word embeddings.
   confusion matrix) — nothing invented.
 - Integrate the best model into a Streamlit application with summary, question
   answering and text-to-speech.
-- Keep the code modular so that **Part 2** can add word embeddings and compare.
+- Keep the code modular so that **Part 2** can add word embeddings and compare
+  (done: §19).
 
 ## 3. Features
 
 | Tab | What it does | Technique |
 |---|---|---|
-| **Upload / Document Information** | filename, type, size, pages (PDF), detected language, confidence | PyMuPDF, python-docx, trained TF-IDF model |
+| **Upload / Document Information** | filename, type, size, pages (PDF), detected language, confidence, representation and model used; **model selector: FastText (Part 2) or TF-IDF (Part 1)** | PyMuPDF, python-docx, trained language-detection models |
 | **📄 Document** | full extracted text | PyMuPDF, python-docx |
 | **📝 Summary** | extractive summary (any language) or abstractive summary (English) | frequency-based sentence scoring / pretrained `sshleifer/distilbart-cnn-12-6` |
 | **❓ Ask AI** | gives the **exact answer** copied from the document (e.g. only the phone number) and shows its source | patterns + TF-IDF retrieval + pretrained extractive QA model |
 | **🔊 Read** | reads the document, the summary or custom text aloud at 0.75x–1.5x speed | gTTS, pyttsx3, pretrained `facebook/mms-tts-kin` |
 
 Model evaluation is **not** part of the interface: it is produced in code by the
-training script (`results/`) for the report and presentation.
+training and comparison scripts (`results/`) for the report and presentation.
 
 ## 4. Part 1 — TF-IDF Baseline
 
@@ -265,16 +273,28 @@ python -m pip install transformers sentencepiece
 # 1. Build the dataset from the real Leipzig corpora (≈ 8 MB download, cached)
 python training/prepare_dataset.py
 
-# 2. Train, compare and evaluate all TF-IDF configurations × classifiers
+# 2. Part 1 - train, compare and evaluate all TF-IDF configurations x classifiers
 python training/train_language_detection_tfidf.py
+
+# 3. Part 2 - train FastText embeddings and evaluate all configurations x classifiers
+python training/train_language_detection_embeddings.py
+
+# 4. Part 1 vs Part 2 - comparison, error analysis, charts
+python training/compare_representations.py
+
+# 5. Optional - 2-D visualisation of the FastText word vectors
+python training/visualize_embeddings.py
 ```
 
-Takes about one minute on a laptop CPU. Options:
+Part 1 takes about one minute, Part 2 about five minutes on a laptop CPU.
+Both scripts share `training/common.py` (data, split, classifiers, metrics,
+selection, calibration), so they differ only in the representation. Options:
 
 ```bash
 python training/train_language_detection_tfidf.py --configs tfidf_char_wb_2-5gram tfidf_word_1gram
 python training/train_language_detection_tfidf.py --classifiers LogisticRegression LinearSVC
 python training/train_language_detection_tfidf.py --seed 42
+python training/train_language_detection_embeddings.py --configs fasttext_skipgram_mean --classifiers LinearSVC
 ```
 
 **Outputs**
@@ -291,6 +311,13 @@ python training/train_language_detection_tfidf.py --seed 42
 | `results/tfidf_classification_report.txt` | per-class report + confusion matrix of the selected model |
 | `results/tfidf_confusion_matrix.png`, `tfidf_confusion_matrices_all_classifiers.png`, `tfidf_model_comparison.png`, `tfidf_short_text_robustness.png` | charts |
 | `results/tfidf_training_log.txt` | full console output of the run reported below |
+| `models/language_detection/fasttext/fasttext.model` | Part 2: trained FastText word + subword vectors (gensim KeyedVectors) |
+| `models/language_detection/fasttext/classifier.pkl`, `metadata.json` | Part 2: selected classifier and its metadata (FastText settings, metrics, split fingerprint) |
+| `results/fasttext_*` | Part 2: same files as the `tfidf_*` ones |
+| `results/comparison*.csv`, `comparison*.png` | Part 1 vs Part 2, same classifiers, full sentences and short inputs |
+| `results/error_analysis.csv`, `error_analysis_summary.csv`, `oov_analysis.csv` | where the two representations disagree, and why |
+| `results/fasttext_embedding_pca.png`, `embedding_words.csv`, `embedding_neighbours.csv` | word-vector visualisation |
+| `results/part2_summary.md` | one-page results summary for the presentation |
 
 ## 11. Running the application
 
@@ -299,8 +326,11 @@ python -m streamlit run app.py
 ```
 
 Open <http://localhost:8501>, upload a document (try the files in `samples/`),
-and explore the tabs. If the model has not been trained, the app shows the
-commands to run instead of crashing.
+and explore the tabs. Choose the **Language Detection Model** — *FastText
+Embeddings (Part 2)* or *TF-IDF Baseline (Part 1)*; the Document Information
+card shows the representation, the model used and the other model's prediction
+for the same document. If a model has not been trained, the app shows the
+command to run instead of crashing.
 
 `samples/` contains an English TXT, a French PDF and a Kinyarwanda DOCX built
 from real held-out test sentences (they are unrelated sentences, so summaries
@@ -413,9 +443,12 @@ but the least accurate on full sentences with char 2–5-grams.
 
 ## 14. Screenshots
 
-Captured from the running app with `samples/french_sample.pdf`.
+Captured from the running app (`samples/kinyarwanda_sample.docx` for the header,
+`samples/french_sample.pdf` for the tabs, a fictional CV for Ask AI).
 
-![Upload and document information](docs/screenshots/00_upload_and_info.png)
+| FastText selected (Part 2) | TF-IDF selected (Part 1) |
+|---|---|
+| ![FastText](docs/screenshots/00_upload_and_info.png) | ![TF-IDF](docs/screenshots/00b_model_selector_tfidf.png) |
 
 | Document tab | Summary tab |
 |---|---|
@@ -429,7 +462,8 @@ Evaluation charts for the presentation are in `results/` (see §13).
 
 | Task | Model / method | Trained by us? |
 |---|---|---|
-| **Language detection (main ML task)** | TF-IDF char_wb 2–5-grams + **LinearSVC** (calibrated) | ✅ **yes** — `training/train_language_detection_tfidf.py` |
+| **Language detection — Part 1** | TF-IDF char_wb 2–5-grams + **LinearSVC** (calibrated) | ✅ **yes** — `training/train_language_detection_tfidf.py` |
+| **Language detection — Part 2** | FastText embeddings (skip-gram, subwords 2–5, mean pooling) + **KNN** | ✅ **yes**, embeddings and classifier — `training/train_language_detection_embeddings.py` |
 | Extractive summary | frequency-based sentence scoring (no ML model) | — rule-based |
 | Abstractive summary (English only, optional) | pretrained `sshleifer/distilbart-cnn-12-6` | ❌ no, pretrained |
 | Question answering — contact details & fields | patterns for phone / e-mail / link, owner's name, address, `Label: value` lines | — rule-based |
@@ -444,34 +478,38 @@ retrieval index; it is not the language-detection vectorizer.
 
 ```
 ai-document-reader/
-├── app.py                              Streamlit application
+├── app.py                                   Streamlit application (model selector)
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
 ├── data/language_detection/
-│   ├── README.md                       dataset format, source and licence
-│   ├── train.csv                       23,973 real sentences
-│   └── test.csv                         5,994 real sentences
+│   ├── README.md                            dataset format, source and licence
+│   ├── train.csv                            23,973 real sentences (same for Part 1 and 2)
+│   └── test.csv                              5,994 real sentences (same for Part 1 and 2)
 ├── training/
-│   ├── prepare_dataset.py              downloads + builds the dataset
-│   └── train_language_detection.py     trains, compares, evaluates, saves
+│   ├── prepare_dataset.py                   downloads + builds the dataset
+│   ├── common.py                            shared pipeline: split, classifiers, metrics, selection
+│   ├── train_language_detection_tfidf.py    Part 1 - TF-IDF
+│   ├── train_language_detection_embeddings.py  Part 2 - FastText
+│   ├── compare_representations.py           Part 1 vs Part 2 + error analysis
+│   └── visualize_embeddings.py              PCA of word vectors
 ├── models/language_detection/
-│   ├── tfidf_vectorizer.pkl
-│   ├── best_model.pkl
-│   └── metadata.json
+│   ├── tfidf/      vectorizer.pkl · model.pkl · metadata.json
+│   └── fasttext/   fasttext.model · classifier.pkl · metadata.json
 ├── src/
-│   ├── config.py                       paths, labels, seed
-│   ├── extraction/                     PDF / DOCX / TXT → text
-│   ├── preprocessing/                  cleaning, tokenisation, stopwords, stats
+│   ├── config.py                            paths, labels, seed
+│   ├── extraction/                          PDF / DOCX / TXT → text
+│   ├── preprocessing/                       cleaning, tokenisation, stopwords, stats
 │   ├── language_detection/
-│   │   ├── features.py                 representation registry (TF-IDF now; embeddings in Part 2)
-│   │   ├── classifiers.py              the 4 classifiers
-│   │   └── detector.py                 loads model, predicts language
-│   ├── summarization/                  extractive + optional pretrained abstractive
-│   ├── question_answering/             exact answers: patterns + retrieval + extractive QA model
-│   └── tts/                            gTTS, pyttsx3, MMS-TTS
-├── results/                            metrics CSVs, report, charts, training log
-├── samples/                            demo TXT / PDF / DOCX
+│   │   ├── features.py                      Part 1 - TF-IDF configurations
+│   │   ├── embeddings.py                    Part 2 - FastText training + document vectors
+│   │   ├── classifiers.py                   the 4 classifiers (shared)
+│   │   └── detector.py                      loads either model folder, predicts language
+│   ├── summarization/                       extractive + optional pretrained abstractive
+│   ├── question_answering/                  exact answers: patterns + retrieval + extractive QA model
+│   └── tts/                                 gTTS, pyttsx3, MMS-TTS
+├── results/                                 tfidf_* · fasttext_* · comparison* · error_analysis* · part2_summary.md
+├── samples/                                 demo TXT / PDF / DOCX
 └── docs/screenshots/
 ```
 
@@ -504,7 +542,8 @@ ai-document-reader/
 
 ## 18. Future improvements
 
-- **Word embeddings for language detection and Q&A (Part 2).**
+- Word embeddings for language detection — **done in Part 2 (§19)**; see §19.14
+  for what could come next.
 - Add an "other/unknown" class and a confidence threshold.
 - Sentence- or paragraph-level detection to handle mixed-language documents.
 - Larger and more varied data per language (same domains for all three).
@@ -513,25 +552,329 @@ ai-document-reader/
 
 ## 19. Part 2 — Word Embedding Improvement
 
-Part 2 will **continue this same codebase and Git history**. It will replace or
-extend the TF-IDF representation with **word embeddings** and compare the results
-against the Part 1 baseline reported in §13.
+Part 2 **continues this same codebase and Git history** (branch
+`ai-document-reader-part2`, built on `ai-document-reader-part1`). Part 1 is kept
+unchanged and runnable; Part 2 adds a second representation next to it.
 
-Planned approach:
+```
+PART 1                                   PART 2
+Raw text                                 Same raw text
+  ↓                                        ↓
+Preprocessing (clean_text)               Same preprocessing
+  ↓                                        ↓
+TF-IDF (sparse, 99,533 dims)             FastText word embeddings (dense, 100 dims per word)
+  ↓                                        ↓
+                                         Document vector = mean of word vectors
+  ↓                                        ↓
+Traditional ML classifier                Same 4 classifiers, same settings
+  ↓                                        ↓
+Language detection                       Language detection
+  ↓                                        ↓
+Evaluation                               Same evaluation  ──►  compared with Part 1
+```
 
-1. Add embedding representations to the registry in
-   `src/language_detection/features.py` (e.g. averaged word vectors), using the
-   same `fit` / `transform` interface as `TfidfVectorizer`.
-2. Re-run `training/train_language_detection_tfidf.py` with the **same dataset, split,
-   seed, classifiers and metrics**, so only the representation changes.
-3. Compare TF-IDF vs. embeddings on full sentences **and** on the short-text
-   benchmark (`results/tfidf_short_text_robustness.csv`), where the baseline still has
-   room to improve (0.906 macro F1 on single words).
-4. Optionally use embeddings for semantic retrieval in the Ask AI tab, so that
-   questions using synonyms can still find the right passage.
+### 19.1 Why Part 2 was necessary
 
-The app loads its model through `LanguageDetector` and `metadata.json`, so a new
-representation can be plugged in without rewriting the interface.
+Part 1 is a strong baseline on full sentences (test macro F1 0.9997), but it has
+two weaknesses visible in its own results: performance drops on **short inputs**
+(0.9055 macro F1 on a single word with LinearSVC) and TF-IDF has **no notion of
+similarity between words** — two different spellings are unrelated features.
+Kinyarwanda in particular has many word forms built from the same stem
+(*ishuri*, *amashuri*, *y'ishuri*), many of which are rare or unseen in training.
+Part 2 tests whether a dense, subword-aware representation helps.
+
+### 19.2 What Part 1 used
+
+* `TfidfVectorizer`, four configurations (word 1-gram, word 1–2-gram, char 1–3, char 2–5)
+* Logistic Regression, LinearSVC, Random Forest, KNN
+* Selected: **char_wb 2–5-grams + LinearSVC** (probability-calibrated)
+
+### 19.3 What Part 2 changed
+
+**Only the text representation.** Everything else is reused through
+`training/common.py`: the same CSV files, cleaning, stratified train/validation
+split (seed 42), classifiers and hyper-parameters, metrics, selection rule,
+short-text test and calibration step. Both `metadata.json` files store the same
+split fingerprint (`train 9119e708d3ce726b · validation 298416300f105cd3 ·
+test 918d6f2a645d8230`), and `compare_representations.py` refuses to run if
+they differ.
+
+New code: `src/language_detection/embeddings.py` (FastText training + document
+vectors), `training/train_language_detection_embeddings.py`,
+`training/compare_representations.py`, `training/visualize_embeddings.py`, and
+a model selector in `app.py`.
+
+### 19.4 Why FastText
+
+* **Subword information.** FastText builds each word vector from its character
+  n-grams. This suits Kinyarwanda's rich morphology (prefixes such as *aba-*,
+  *umu-*, *ama-*) and gives a vector even to words never seen in training.
+  15.1% of Kinyarwanda test words never occur in the training text (English
+  7.4%, French 8.5% — `results/oov_analysis.csv`).
+* **Trainable on our own data.** Pre-trained Kinyarwanda vectors are scarce and
+  were trained on different text; training on our training split keeps the
+  comparison fair (same data as TF-IDF) and needs no external download.
+* **Light enough** to train on a laptop CPU in about a minute (gensim).
+* Character n-grams were already the best TF-IDF features in Part 1, so FastText
+  is the natural "embedding" counterpart to compare with.
+
+### 19.5 How FastText works
+
+FastText (Bojanowski et al., 2017) is an extension of Word2Vec:
+
+1. It reads the training sentences and learns, for each word, a 100-number
+   vector such that words appearing in **similar contexts** get similar vectors
+   (here: **skip-gram** — predict the neighbouring words within a window of 5).
+2. Each word is represented as the sum of the vectors of its **character
+   n-grams** (here 2–5 characters) plus the word itself:
+   `ishuri → <i, is, sh, hu, ur, ri, i>, <is, ish, …, <ishuri>`.
+3. An unseen word (e.g. *amashuri*) still gets a vector from the n-grams it
+   shares with known words.
+
+**FastText is not contextual.** Unlike BERT-style models, a word has one fixed
+vector whatever sentence it appears in.
+
+**Settings** (`FASTTEXT_DEFAULTS` in `src/language_detection/embeddings.py`, all configurable):
+
+| Setting | Value | Meaning |
+|---|---|---|
+| `vector_size` | 100 | dimensions per word vector |
+| `window` | 5 | context words on each side |
+| `min_count` | 2 | words seen once get no own vector (their n-grams still do) |
+| `epochs` | 20 | passes over the training text |
+| `sg` | 1 (skip-gram) | learning algorithm (0 = CBOW, also tested) |
+| `min_n`, `max_n` | 2, 5 in the selected model (3, 6 default) | character n-gram range |
+| `bucket` | 50,000 | hash buckets for n-gram vectors (50k vs 100k changed validation F1 by ≤ 0.002 but halves the file) |
+| `negative` | 5 | negative sampling |
+| `seed`, `workers` | 42, 1 | with a deterministic hash function → reproducible training |
+| training data | training split only | unsupervised: no labels, no validation/test text |
+
+**TF-IDF vs FastText**
+
+| | TF-IDF (Part 1) | FastText (Part 2) |
+|---|---|---|
+| Vector type | **sparse**: almost all values are 0 | **dense**: every value used |
+| Size | high-dimensional (99,533 features) | low-dimensional (100 per word / document) |
+| Based on | how often n-grams occur (frequency × rarity) | which words occur near each other (prediction task) |
+| Word similarity | none — every feature is independent | similar contexts / spellings → similar vectors |
+| Unseen words | character n-grams still match, word n-grams do not | vector built from character n-grams |
+| Interpretability | high — each feature is a readable n-gram | low — dimensions have no direct meaning |
+| Training cost | 2.7 s | 78.8 s |
+| Contextual? | no | **no** |
+
+### 19.6 How document vectors were created
+
+A classifier needs **one fixed-size vector per text**, but texts contain
+different numbers of words. Each text is therefore turned into a document
+vector by averaging its word vectors (`FastTextDocumentVectorizer`):
+
+```
+"abana bagiye ku ishuri"
+  → v(abana), v(bagiye), v(ku), v(ishuri)        4 × 100 numbers
+  → mean                                          1 × 100 numbers
+  → divide by its length (L2 normalisation, as TF-IDF rows in Part 1)
+```
+
+Texts with no words become a zero vector. As one simple alternative,
+**mean + max pooling** (mean and element-wise maximum concatenated, 200 numbers)
+was also tested.
+
+### 19.7 Which classifiers were tested
+
+The **same four classifiers with the same settings** as Part 1 (§8): Logistic
+Regression, LinearSVC, Random Forest, KNN (k = 5, cosine). Five FastText
+configurations were tested with each (20 models):
+
+| Config | What it tests |
+|---|---|
+| `cbow_mean` | CBOW instead of skip-gram |
+| `skipgram_mean` | skip-gram, n-grams 3–6 (gensim default) |
+| `skipgram_ng2-5_mean` | n-grams 2–5, like the best TF-IDF features |
+| `skipgram_nosubwords_mean` | **ablation**: no character n-grams = plain word vectors |
+| `skipgram_meanmax` | mean + max pooling instead of mean |
+
+### 19.8 Dataset used
+
+Exactly the Part 1 dataset (§6): the same `train.csv` (23,973 sentences) and
+`test.csv` (5,994 sentences), the same 19,178 / 4,795 train / validation split.
+No new data was downloaded.
+
+### 19.9 Evaluation methodology
+
+Identical to Part 1: accuracy, macro precision, macro recall, macro F1,
+classification report and confusion matrix on the held-out test set; model
+selection by validation macro F1 with the 3-word tie-break; the same
+short-text test (first 1 / 2 / 3 / 5 words of each test sentence).
+`compare_representations.py` then compares each classifier across the two
+representations, computes **difference = FastText − TF-IDF**, compares the two
+deployed models and runs the error analysis.
+
+### 19.10 Results
+
+All numbers were produced by `python training/train_language_detection_embeddings.py`
+on 2026-10-02 (`results/fasttext_results.csv`, `results/fasttext_training_log.txt`).
+
+| FastText config | Classifier | Val acc | Val macro F1 | Val F1 (3 words) | Test acc | Test precision | Test recall | Test macro F1 |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| **skipgram ng2-5 mean** | **KNN** ★ | 1.0000 | **1.0000** | **0.9898** | 1.0000 | 1.0000 | 1.0000 | **1.0000** |
+| skipgram ng2-5 mean | LinearSVC | 1.0000 | 1.0000 | 0.9892 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| skipgram mean | KNN | 1.0000 | 1.0000 | 0.9881 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| skipgram mean | LinearSVC | 1.0000 | 1.0000 | 0.9879 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| skipgram meanmax | KNN | 1.0000 | 1.0000 | 0.9877 | 0.9997 | 0.9997 | 0.9997 | 0.9997 |
+| skipgram meanmax | LinearSVC | 1.0000 | 1.0000 | 0.9875 | 0.9998 | 0.9998 | 0.9998 | 0.9998 |
+| skipgram meanmax | RandomForest | 1.0000 | 1.0000 | 0.9869 | 0.9998 | 0.9998 | 0.9998 | 0.9998 |
+| skipgram meanmax | LogisticRegression | 1.0000 | 1.0000 | 0.9867 | 0.9997 | 0.9997 | 0.9997 | 0.9997 |
+| skipgram ng2-5 mean | RandomForest | 1.0000 | 1.0000 | 0.9862 | 0.9998 | 0.9998 | 0.9998 | 0.9998 |
+| skipgram nosubwords mean | LinearSVC | 1.0000 | 1.0000 | 0.9852 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| skipgram mean | RandomForest | 1.0000 | 1.0000 | 0.9852 | 0.9998 | 0.9998 | 0.9998 | 0.9998 |
+| skipgram ng2-5 mean | LogisticRegression | 0.9998 | 0.9998 | 0.9894 | 0.9998 | 0.9998 | 0.9998 | 0.9998 |
+| skipgram nosubwords mean | LogisticRegression | 0.9998 | 0.9998 | 0.9875 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| skipgram mean | LogisticRegression | 0.9998 | 0.9998 | 0.9869 | 0.9998 | 0.9998 | 0.9998 | 0.9998 |
+| skipgram nosubwords mean | KNN | 0.9998 | 0.9998 | 0.9852 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| cbow mean | LinearSVC | 0.9998 | 0.9998 | 0.9850 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| skipgram nosubwords mean | RandomForest | 0.9998 | 0.9998 | 0.9842 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| cbow mean | RandomForest | 0.9998 | 0.9998 | 0.9840 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| cbow mean | LogisticRegression | 0.9998 | 0.9998 | 0.9835 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| cbow mean | KNN | 0.9998 | 0.9998 | 0.9829 | 0.9998 | 0.9998 | 0.9998 | 0.9998 |
+
+★ **Selected: KNN + FastText skip-gram, subwords 2–5, mean pooling** — by the same
+rule as Part 1 (11 models tie at validation macro F1 = 1.0000; the 3-word
+validation F1 decides). KNN outputs probabilities itself, so no calibration was
+needed. On the test set it classifies all 5,994 sentences correctly.
+
+![FastText model comparison](results/fasttext_model_comparison.png)
+
+**Observations within Part 2**
+
+* Skip-gram beats CBOW on short inputs for every classifier (3-word validation F1
+  0.9852–0.9898 vs 0.9829–0.9850).
+* Mean + max pooling gave no consistent gain over plain mean pooling: similar
+  validation scores; on single test words it helped Logistic Regression
+  (0.9358 vs 0.9177) but not KNN (0.9300 vs 0.9338).
+* **Subwords matter for short text:** without character n-grams, single-word test
+  F1 with LinearSVC falls from 0.9308 (subwords 2–5) to 0.8947 — below even the
+  TF-IDF character model (0.9055). On full sentences, plain word vectors are
+  just as good (test macro F1 1.0000 with LinearSVC).
+
+### 19.11 Before/after comparison
+
+`results/comparison.csv` — same classifier, Part 1 representation (TF-IDF char
+2–5) vs Part 2 representation (FastText skip-gram 2–5), held-out test set:
+
+| Classifier | Metric | TF-IDF | FastText | Difference |
+|---|---|---:|---:|---:|
+| Logistic Regression | Accuracy / Precision / Recall / Macro F1 | 0.9997 | 0.9998 | +0.0002 |
+| LinearSVC | Accuracy / Precision / Recall / Macro F1 | 0.9997 | 1.0000 | +0.0003 |
+| Random Forest | Accuracy / Precision / Recall / Macro F1 | 0.9995 | 0.9998 | +0.0003 |
+| KNN | Accuracy / Precision / Recall / Macro F1 | 0.9960 | 1.0000 | +0.0040 |
+
+(For each classifier the four metrics are identical to four decimals because the
+classes are balanced and errors are rare.)
+
+**Short inputs** (`results/comparison_short_text.csv`, test macro F1, difference = FastText − TF-IDF):
+
+| Classifier | 1 word | 2 words | 3 words | 5 words |
+|---|---:|---:|---:|---:|
+| Logistic Regression | 0.8901 → 0.9269 (+0.0368) | 0.9566 → 0.9708 (+0.0143) | 0.9778 → 0.9877 (+0.0098) | 0.9938 → 0.9960 (+0.0022) |
+| LinearSVC | 0.9055 → 0.9308 (+0.0254) | 0.9589 → 0.9703 (+0.0114) | 0.9797 → 0.9883 (+0.0086) | 0.9945 → 0.9963 (+0.0018) |
+| Random Forest | 0.8453 → 0.9171 (+0.0718) | 0.9363 → 0.9694 (+0.0330) | 0.9691 → 0.9868 (+0.0178) | 0.9910 → 0.9952 (+0.0042) |
+| KNN | 0.9277 → 0.9299 (+0.0022) | 0.9413 → 0.9708 (+0.0295) | 0.9584 → 0.9887 (+0.0302) | 0.9802 → 0.9962 (+0.0160) |
+
+**Deployed models** (the ones used by the app, `results/comparison_deployed.csv`):
+
+| | TF-IDF + LinearSVC (calibrated) | FastText + KNN | Difference |
+|---|---:|---:|---:|
+| Accuracy | 0.9997 | 1.0000 | +0.0003 |
+| Precision (macro) | 0.9997 | 1.0000 | +0.0003 |
+| Recall (macro) | 0.9997 | 1.0000 | +0.0003 |
+| Macro F1 | 0.9997 | 1.0000 | +0.0003 |
+| Macro F1, first 2 words | 0.9581 | 0.9708 | +0.0127 |
+| Macro F1, first word | 0.9043 | 0.9299 | +0.0256 |
+
+![TF-IDF vs FastText](results/comparison.png)
+
+![Short inputs](results/comparison_short_text.png)
+
+**What improved:** every classifier, at every input length. On full sentences
+the gain is tiny (TF-IDF was already near-perfect); on short inputs it is clear,
+largest for Random Forest (+0.0718 on single words) and smallest for KNN on
+single words (+0.0022). Kinyarwanda gains most: single-word F1 0.9223 → 0.9469
+(English 0.8877 → 0.9163, French 0.9030 → 0.9263).
+
+**What did not improve:** on full sentences the difference is 2 sentences out of
+5,994 — not enough to claim a general improvement there. FastText is slower to
+train (78.8 s vs 2.7 s), its model files are larger (30.2 MB vector file vs 3.4 MB
+vectorizer), and its dimensions are not interpretable. The selected KNN gives a
+coarse confidence (share of the 5 nearest training sentences that agree).
+
+**Why:** full sentences contain enough evidence for both representations
+(ceiling effect). With one or two words, FastText's subword vectors and learned
+similarities give the classifier more information than a handful of sparse
+n-gram features; the no-subword ablation shows that the subwords explain most of
+the gain. Dense 100-dimensional input also suits Random Forest and KNN better
+than 99,533 sparse dimensions.
+
+### 19.12 Error analysis
+
+`training/compare_representations.py` compares the two deployed models on the
+same test texts (`results/error_analysis.csv`, `error_analysis_summary.csv`):
+
+| Input | Both correct | TF-IDF correct, FastText wrong | FastText correct, TF-IDF wrong | Both wrong |
+|---|---:|---:|---:|---:|
+| Full sentence | 5,992 | 0 | 2 | 0 |
+| First 2 words | 5,703 | 39 | 116 | 136 |
+| First word | 5,346 | 72 | 227 | 349 |
+
+Examples:
+
+| Text | True | TF-IDF | FastText | Explanation |
+|---|---|---|---|---|
+| *ni ukwica intellectuellement generation yose* | kinyarwanda | french | **kinyarwanda** | code-switching; likely because averaging lets the three Kinyarwanda words (*ni*, *ukwica*, *yose*) outweigh the French one |
+| *jennifer aniston et steve carrell dans la série the morning show* | french | english | **french** | likely because the French function words (*et*, *dans*, *la*) still pull the average towards French |
+| *leta*, *pasiteri*, *moto* (1 word) | kinyarwanda | french / english | **kinyarwanda** | short Kinyarwanda words with few distinctive n-grams; FastText knows them from context |
+| *peter*, *pascal*, *registration* (1 word) | en / fr / en | wrong | **correct** | learned from the contexts these words appeared in |
+| *trump*, *donald*, *jacob* (1 word) | english | **english** | french | names: the French news corpus mentions these people often, so their vectors lie near French words — embeddings learn topic and domain, not only language |
+| *salisbury*, *baby* (1 word) | english | **english** | kinyarwanda | rare or ambiguous spellings; nearest neighbours in vector space are from the wrong language |
+
+114 of the 227 single words that only FastText got right are Kinyarwanda; all 72
+single words that only TF-IDF got right are English or French, many of them names.
+
+**Embedding visualisation** (`training/visualize_embeddings.py`):
+
+![FastText PCA](results/fasttext_embedding_pca.png)
+
+Words cluster by **language**, which is what the classifier exploits. The 2-D
+PCA keeps only 36% of the variance, and proximity does **not** mean two words are
+translations. Nearest neighbours (`results/embedding_neighbours.csv`) show what
+subwords capture — *ishuri → y'ishuri, w'amashuri*; *abantu → nk'abantu, z'abantu*
+— and also their side effect: *people → purple*, *gens → chiens* (similar
+spelling, unrelated meaning). *hello*, *bonjour* and *muraho* are not plotted:
+they occur 2, 0 and 0 times in the news/web training text.
+
+### 19.13 Limitations
+
+* **Ceiling effect:** both representations are near-perfect on full sentences, so
+  the test set can barely separate them; the evidence for improvement comes from
+  short inputs, which are derived by truncating real test sentences.
+* **Embeddings trained on 19,178 sentences** are small and domain-specific (news
+  and web). They encode who is mentioned where (e.g. *trump* → French).
+* **Mean pooling ignores word order** and lets frequent words dominate.
+* **Not contextual:** one vector per word regardless of meaning in context.
+* **Less interpretable** than TF-IDF n-gram weights.
+* **KNN confidence is coarse** (0, 20, … 100%) and KNN keeps all 19,178
+  training vectors in memory.
+* The comparison uses one train/test split and one seed; differences of a few
+  sentences are within normal variation.
+
+### 19.14 Future improvements
+
+* Repeat the comparison with several seeds / cross-validation to measure variance.
+* Pre-trained multilingual FastText vectors (e.g. Common Crawl `cc.rw`, `cc.fr`,
+  `cc.en`) versus our own vectors.
+* TF-IDF-weighted averaging of word vectors, or concatenating TF-IDF and
+  FastText features.
+* Use the embeddings for semantic passage retrieval in Ask AI.
+* Sentence-level detection to handle mixed-language documents.
 
 ## 20. How the Machine Learning Works
 
@@ -595,7 +938,31 @@ French, "nyi" or "rw" towards Kinyarwanda. For a new document it adds up
   character TF-IDF captures directly.
 - **Language-independent** — needs no pretrained resources, which matters for a
   low-resource language like Kinyarwanda.
-- **A fair yardstick** — embeddings capture *meaning* and similarity between words
-  (e.g. "car" ≈ "automobile"), which TF-IDF cannot. Part 2 will measure whether that
-  extra knowledge actually improves language detection and question answering,
-  compared against the numbers above.
+- **A fair yardstick** — embeddings capture similarity between words, which
+  TF-IDF cannot. Part 2 measured whether that helps language detection (§19).
+
+### How Part 2 (FastText) works on the same sentence
+
+```
+Raw text           "Abana bagiye ku ishuri uyu munsi."
+   │
+   ▼
+Preprocessing      same as Part 1 → abana · bagiye · ku · ishuri · uyu · munsi
+   │
+   ▼
+FastText           one 100-number vector per word, built from the word and its
+word vectors       character n-grams (ab, aba, ban, … ri>) — learned on the training split
+   │
+   ▼
+Document vector    mean of the 6 word vectors → 100 numbers, normalised to length 1
+   │
+   ▼
+ML classifier      KNN: the 5 training sentences with the most similar document
+   │               vectors vote → kinyarwanda 5/5
+   ▼
+Language           kinyarwanda (confidence 100% = 5 of 5 neighbours agree)
+prediction
+   │
+   ▼
+Evaluation         same metrics and test set as Part 1 → compared in §19.11
+```

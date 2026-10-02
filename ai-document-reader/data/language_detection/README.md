@@ -52,5 +52,6 @@ Languages.* LREC 2012.
 ## Option B — use your own data
 
 Place your own `train.csv` and `test.csv` (format above) in this folder.
-If either file is missing or invalid, the training scripts (`training/train_language_detection_*.py`)
-stops with an explicit error message; it never invents data.
+If either file is missing or invalid, the training scripts
+(`training/train_language_detection_*.py`) stop with an explicit error message;
+they never invent data. Part 1 (TF-IDF) and Part 2 (FastText) use the same files.
