@@ -1,7 +1,10 @@
-"""AI Document Reader - Part 1 (TF-IDF baseline). Run: python -m streamlit run app.py
+"""AI Document Reader. Run: python -m streamlit run app.py
 
-Model evaluation is done in code (training/train_language_detection_tfidf.py -> results/),
-not in this interface.
+Language detection can use either model:
+  * Part 1 - TF-IDF baseline        (models/language_detection/tfidf/)
+  * Part 2 - FastText embeddings    (models/language_detection/fasttext/)
+
+Model evaluation is done in code (training/*.py -> results/), not in this interface.
 """
 
 from __future__ import annotations
@@ -10,6 +13,7 @@ import html
 
 import streamlit as st
 
+from src.config import FASTTEXT_MODEL_DIR, TFIDF_MODEL_DIR
 from src.extraction import SUPPORTED_TYPES, UnsupportedFileTypeError, extract_text
 from src.language_detection import LanguageDetector, ModelNotTrainedError
 from src.preprocessing import preprocess
@@ -23,6 +27,12 @@ st.set_page_config(page_title="AI Document Reader", page_icon="📄", layout="ce
 
 LANGUAGES = ["english", "french", "kinyarwanda"]
 SPEEDS = {"0.75x": 0.75, "1x": 1.0, "1.25x": 1.25, "1.5x": 1.5}
+DETECTION_MODELS = {
+    "FastText Embeddings (Part 2)": ("FastText embeddings", FASTTEXT_MODEL_DIR,
+                                     "python training/train_language_detection_embeddings.py"),
+    "TF-IDF Baseline (Part 1)": ("TF-IDF", TFIDF_MODEL_DIR,
+                                 "python training/train_language_detection_tfidf.py"),
+}
 READ_EXCERPT_CHARS = 3000
 
 st.markdown(
@@ -42,9 +52,16 @@ st.markdown(
 
 
 # ------------------------------------------------------------- cached ----
-@st.cache_resource
-def load_detector() -> LanguageDetector:
-    return LanguageDetector.load()
+@st.cache_resource(show_spinner="Loading language detection model...")
+def load_detector(model_dir: str) -> LanguageDetector:
+    return LanguageDetector.load(model_dir)
+
+
+def try_load_detector(choice: str) -> LanguageDetector | None:
+    try:
+        return load_detector(str(DETECTION_MODELS[choice][1]))
+    except ModelNotTrainedError:
+        return None
 
 
 @st.cache_data(show_spinner=False)
@@ -85,13 +102,16 @@ uploaded = st.file_uploader(
     help="PDF is read with PyMuPDF, DOCX with python-docx, TXT as UTF-8 text.",
 )
 
-try:
-    detector = load_detector()
-except ModelNotTrainedError as exc:
-    st.error(f"**Language detection model not found.**\n\n```\n{exc}\n```")
-    st.info("Build the dataset and train the model first:\n\n"
-            "```bash\npython training/prepare_dataset.py\npython training/train_language_detection_tfidf.py\n```")
+model_choice = st.radio("Language Detection Model", list(DETECTION_MODELS), horizontal=True,
+                        help="Part 1 uses a sparse TF-IDF representation; Part 2 uses dense FastText "
+                             "word embeddings. Both use the same data, preprocessing and evaluation.")
+representation_name, _, train_command = DETECTION_MODELS[model_choice]
+detector = try_load_detector(model_choice)
+if detector is None:
+    st.error(f"**The {model_choice} model has not been trained yet.**")
+    st.info(f"Train it first:\n\n```bash\npython training/prepare_dataset.py\n{train_command}\n```")
     st.stop()
+other_choice = next(c for c in DETECTION_MODELS if c != model_choice)
 
 if uploaded is None:
     st.stop()
@@ -142,6 +162,15 @@ with st.container(border=True):
     info_cell(cols[4], "Language", language.capitalize())
     info_cell(cols[5], "Confidence",
               f"{prediction.confidence:.0%}" if prediction.confidence is not None else "n/a")
+    row = st.columns([3.2, 4.2])
+    info_cell(row[0], "Representation", representation_name)
+    info_cell(row[1], "Model used", f"{prediction.model_name} ({detector.metadata['feature_config']})")
+    other = try_load_detector(other_choice)
+    if other is not None:
+        other_pred = other.predict(doc.text)
+        conf = f", {other_pred.confidence:.0%}" if other_pred.confidence is not None else ""
+        st.caption(f"For comparison, {other_choice} predicts: "
+                   f"**{other_pred.language.capitalize()}**{conf}")
 
 tab_doc, tab_sum, tab_qa, tab_read = st.tabs(["📄 Document", "📝 Summary", "❓ Ask AI", "🔊 Read"])
 
