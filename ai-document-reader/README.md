@@ -38,7 +38,276 @@
 
 ---
 
+## Quick start — run the app step by step
+
+The project is the `ai-document-reader` folder of the GitHub repository
+[mclaire12/KLab-tekher-program](https://github.com/mclaire12/KLab-tekher-program).
+The dataset and **both trained language-detection models are included**, so you
+do **not** need to train anything to run the app.
+
+### What you need first
+
+| Requirement | Notes |
+|---|---|
+| **Python 3.10 – 3.13** | check with `python --version` (Windows: tick *Add python.exe to PATH* when installing) |
+| **Git** | to clone the repository (or download the ZIP from GitHub) |
+| **Free disk space** | ≈ 2 GB for the packages (mostly PyTorch), plus up to ≈ 3.5 GB if you use all the pretrained features (downloaded on first use, see below) |
+| **Internet connection** | for the installation and the first use of some features (see *First run* below) |
+
+### Steps
+
+**1. Clone the repository and open the project folder**
+
+```bash
+git clone https://github.com/mclaire12/KLab-tekher-program.git
+cd KLab-tekher-program/ai-document-reader
+```
+
+**2. Create a virtual environment** (keeps this project's packages separate)
+
+```bash
+python -m venv .venv
+```
+
+**3. Activate it** — your prompt then starts with `(.venv)`
+
+```bash
+# Windows (PowerShell or Command Prompt)
+.venv\Scripts\activate
+
+# macOS / Linux
+source .venv/bin/activate
+```
+
+> Windows PowerShell may refuse to run the activation script. Run this once, then
+> activate again: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+
+**4. Install the dependencies** (5–10 minutes the first time)
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+**5. Start the app**
+
+```bash
+python -m streamlit run app.py
+```
+
+Your browser opens <http://localhost:8501>. (If it does not, open that address
+yourself.) Stop the app with **Ctrl + C** in the terminal.
+
+**6. Use it**
+
+1. Drag a **PDF, DOCX or TXT** file into *Upload your document* — try the files
+   in [`samples/`](samples/).
+2. Choose the **Language Detection Model**: *FastText Embeddings (Part 2)* or
+   *TF-IDF Baseline (Part 1)*. The **Document Information** card shows the
+   language, the confidence, the representation and model used, and what the
+   other model predicts.
+3. Explore the tabs: **Document** (extracted text), **Summary**, **Ask AI**
+   (ask e.g. *"What is the phone number of the owner?"*), **Read** (listen).
+
+**Every time you come back later:** open a terminal in `ai-document-reader`,
+activate the environment (step 3) and start the app (step 5).
+
+### First run: automatic downloads
+
+Some features use pretrained models that are downloaded once, on first use, and
+then cached on your computer. The app works without them and falls back to
+simpler methods if a download is not possible.
+
+| Feature | Pretrained model | Download |
+|---|---|---|
+| Ask AI — exact answers to general questions | `deepset/xlm-roberta-base-squad2` | ≈ 1.1 GB (the first question takes about 15–20 s to load it) |
+| Summary — *Abstractive* option (English only) | `sshleifer/distilbart-cnn-12-6` | ≈ 2.3 GB |
+| Read — Kinyarwanda voice | `facebook/mms-tts-kin` | ≈ 140 MB |
+| Read — English/French voice (gTTS) | Google Text-to-Speech | needs internet every time |
+
+Language detection, text extraction, the extractive summary, the phone/e-mail/name
+answers in Ask AI and the offline voice need **no** download.
+
+### Optional: re-train and re-evaluate the models
+
+Not needed to run the app; use this to reproduce the results in this README.
+
+```bash
+python training/prepare_dataset.py                   # only if data/ is missing (downloads the corpora)
+python training/train_language_detection_tfidf.py    # Part 1 - TF-IDF          (~1 min)
+python training/train_language_detection_embeddings.py   # Part 2 - FastText    (~5 min)
+python training/compare_representations.py           # Part 1 vs Part 2 + error analysis (~1 min)
+python training/visualize_embeddings.py              # optional chart of the word vectors
+```
+
+Results are written to [`results/`](results/) — a one-page summary is in
+[`results/part2_summary.md`](results/part2_summary.md).
+
+### Troubleshooting
+
+| Problem | Solution |
+|---|---|
+| `No module named 'pymupdf'` (or another package) | the app runs in a different Python than the one you installed into. Activate `.venv` (step 3) and always use `python -m pip …` and `python -m streamlit …` |
+| `'streamlit' is not recognized` | use `python -m streamlit run app.py` |
+| `python` not found (Windows) | try `py` instead of `python`, or reinstall Python with *Add to PATH* |
+| *Language detection model has not been trained yet* | the `models/` folder is missing; run the two training commands above |
+| PDF shows *No text could be extracted* | it is a scanned PDF (images only); OCR is not supported |
+| No sound with gTTS | gTTS needs internet; choose *Offline system voice* in *Voice options* |
+| Offline voice fails on Linux | install espeak: `sudo apt install espeak-ng` |
+| Port 8501 already in use | `python -m streamlit run app.py --server.port 8502` |
+| `OSError … No such file or directory … Windows Long Path support` during step 4 | the folder path is too long for Windows (260-character limit). Clone into a short path such as `C:\projects\`, or [enable long paths](https://pip.pypa.io/warnings/enable-long-paths), then repeat steps 2–4 |
+
+---
+
+## Dependencies
+
+All are listed in [`requirements.txt`](requirements.txt) and installed by step 4.
+
+| Package | Used for | Needed for |
+|---|---|---|
+| `numpy`, `pandas` | data handling | everything |
+| `scikit-learn` | TF-IDF, the 4 classifiers, metrics, PCA | language detection (both parts) |
+| `gensim` | **FastText** word embeddings | language detection, Part 2 |
+| `joblib` | saving / loading trained models | language detection |
+| `matplotlib` | charts in `results/` | training scripts only |
+| `requests` | downloading the dataset | `prepare_dataset.py` only |
+| `pymupdf` | reading **PDF** files | upload |
+| `python-docx` | reading **DOCX** files | upload |
+| `streamlit` | the web application | the app |
+| `gTTS` | English / French speech (online) | Read tab |
+| `pyttsx3` | offline system voice | Read tab |
+| `torch`, `transformers`, `sentencepiece` | running the pretrained models (Ask AI, abstractive summary, Kinyarwanda voice) | optional features — the app falls back without them |
+
+Tested with Python 3.13, scikit-learn 1.9, gensim 4.4, streamlit 1.64, torch 2.x
+(CPU) on Windows 11.
+
+---
+
+## How the project works
+
+```
+                 you upload a PDF / DOCX / TXT
+                              │
+   1. Text extraction         src/extraction/        PyMuPDF · python-docx · Python
+                              │
+   2. Preprocessing           src/preprocessing/     lowercase, remove punctuation/digits/URLs,
+                              │                      keep accents and apostrophes, tokenize
+                              │
+   3. Language detection      src/language_detection/   ★ the machine-learning part ★
+      text → representation → classifier → English / French / Kinyarwanda + confidence
+        Part 1: TF-IDF character n-grams      + LinearSVC
+        Part 2: FastText word embeddings      + KNN          (choose in the app)
+                              │
+   4. Features using the text
+      Summary    src/summarization/      most important sentences (or pretrained model, English)
+      Ask AI     src/question_answering/ exact answer copied from the document + its source
+      Read       src/tts/                text-to-speech in the detected language
+```
+
+* **Training** (`training/`) happens offline: the scripts learn the language
+  models from 23,973 labelled sentences and test them on 5,994 other sentences.
+  The app only **loads** the saved models from `models/language_detection/`.
+* `training/common.py` contains everything shared by Part 1 and Part 2 (data,
+  split, classifiers, metrics), so the only difference between the parts is the
+  text representation.
+
+---
+
+## Part 1 vs Part 2 at a glance
+
+| | **Part 1 — TF-IDF baseline** | **Part 2 — FastText embeddings** |
+|---|---|---|
+| Idea | count character patterns, weight rare ones higher | learn a vector per word from the words around it, built from character pieces |
+| Representation | sparse, 99,533 numbers per text (mostly 0) | dense, 100 numbers per text (mean of word vectors) |
+| Captures similarity between words? | no | yes (spelling and context) |
+| Unseen words | only through shared character n-grams | vector built from character n-grams |
+| Selected classifier | LinearSVC (calibrated) | KNN (5 neighbours) |
+| Same data, split, classifiers, metrics? | ✅ | ✅ (identical split fingerprint) |
+| Test accuracy / macro F1 (full sentences) | 0.9997 / 0.9997 (2 errors) | 1.0000 / 1.0000 (0 errors) |
+| Macro F1 — first 2 words only | 0.9581 | **0.9708** |
+| Macro F1 — first word only | 0.9043 | **0.9299** |
+| Training time | 2.7 s | 78.8 s |
+| Interpretability | high (readable n-grams) | low |
+| Code | `training/train_language_detection_tfidf.py` | `training/train_language_detection_embeddings.py` |
+
+**In one sentence:** on full sentences both are almost perfect; FastText helps
+mainly on **short texts and rare words, especially Kinyarwanda**, at the cost of
+slower training and less interpretability. Details in §13 (Part 1) and §19 (Part 2).
+
+## How to test Part 1 vs Part 2 yourself
+
+### A. In the app (live demo, 5 minutes)
+
+1. Start the app (Quick start, step 5): `python -m streamlit run app.py`.
+2. Upload a file from [`samples/part1_vs_part2/`](samples/part1_vs_part2/).
+3. Read the **Document Information** card: *Language*, *Confidence*,
+   *Representation* and *Model used* for the selected model, and the line
+   **"For comparison, … predicts: …"** for the other model.
+4. Switch the **Language Detection Model** between *FastText Embeddings (Part 2)*
+   and *TF-IDF Baseline (Part 1)*; the card updates immediately.
+5. Repeat with the next file.
+
+Expected results (measured with the committed models):
+
+| File | Text | True language | TF-IDF (Part 1) | FastText (Part 2) | What it shows |
+|---|---|---|---|---|---|
+| `01_leta_kinyarwanda.txt` | leta | Kinyarwanda | French ✗ (84%) | **Kinyarwanda ✓** (100%) | short Kinyarwanda word: few distinctive character n-grams for TF-IDF |
+| `02_polisi_kinyarwanda.txt` | polisi | Kinyarwanda | French ✗ (58%) | **Kinyarwanda ✓** (100%) | spelling close to French *police*; FastText learned the word from Kinyarwanda contexts |
+| `03_moto_kinyarwanda.txt` | moto | Kinyarwanda | English ✗ (94%) | **Kinyarwanda ✓** (100%) | high TF-IDF confidence can still be wrong |
+| `04_peter_english.txt` | Peter | English | French ✗ (66%) | **English ✓** (100%) | names: FastText uses the contexts the word appeared in |
+| `05_once_english.txt` | once | English | French ✗ (53%) | **English ✓** (100%) | the letters *-nce* look French; the word vector knows English usage |
+| `06_code_switching_kinyarwanda.txt` | Ni ukwica intellectuellement generation yose. | Kinyarwanda | French ✗ (59%) | **Kinyarwanda ✓** (100%) | mixed-language sentence (Part 1's test error) |
+| `07_names_in_french_sentence.txt` | Jennifer Aniston et Steve Carrell dans la série The Morning Show. | French | English ✗ (60%) | **French ✓** (100%) | many English names in a French sentence (Part 1's test error) |
+| `08_trump_english.txt` | trump | English | **English ✓** (72%) | French ✗ (60%) | **FastText is not always better**: the French news data mentions Trump often, so the vector is near French words |
+| `09_muraho_kinyarwanda.txt` | Muraho | Kinyarwanda | **Kinyarwanda ✓** (97%) | **Kinyarwanda ✓** (100%) | easy words: both correct |
+
+Full documents (e.g. `samples/kinyarwanda_sample.docx`) are detected correctly by
+**both** models — the difference shows on short or unusual text, exactly as in
+the evaluation (§19.11). You can also type any word into a `.txt` file and upload it.
+
+> Confidence ≠ correctness: for KNN (Part 2), confidence is the share of the 5
+> nearest training sentences that agree, so it is often 100%. *moto* shows that
+> TF-IDF can be 94% confident and still wrong.
+
+### B. Reproduce the measured comparison (3 commands)
+
+```bash
+python training/train_language_detection_tfidf.py        # Part 1 results  (~1 min)
+python training/train_language_detection_embeddings.py   # Part 2 results  (~5 min)
+python training/compare_representations.py               # Part 1 vs Part 2 (~1 min)
+```
+
+The last command first checks that both models used **the same data split**,
+then prints, per classifier, accuracy / precision / recall / macro F1 for both
+representations and the **difference (FastText − TF-IDF)**, on full sentences
+and on 1-, 2-, 3- and 5-word inputs, plus the error analysis (printed as tables).
+Key numbers to look for in the *Deployed models* and *Error analysis* tables:
+
+| | TF-IDF | FastText |
+|---|---:|---:|
+| Macro F1, full test sentences | 0.9997 | 1.0000 |
+| Macro F1, first word only | 0.9043 | 0.9299 |
+| First word: correct only with this model | 72 | 227 |
+
+### C. Look at the evidence
+
+| Open | Shows |
+|---|---|
+| [`results/part2_summary.md`](results/part2_summary.md) | one-page summary with the before/after table |
+| [`results/comparison.png`](results/comparison.png) | macro F1 per classifier, TF-IDF vs FastText (full sentences and single words) |
+| [`results/comparison_short_text.png`](results/comparison_short_text.png) | how both behave as the input gets shorter, including the no-subword ablation |
+| [`results/comparison.csv`](results/comparison.csv) | the numbers with the difference column |
+| [`results/error_analysis.csv`](results/error_analysis.csv) | every text where the two models disagree (open in Excel) |
+| [`results/fasttext_embedding_pca.png`](results/fasttext_embedding_pca.png) | the word vectors in 2-D, grouped by language |
+
+---
+
+---
+
 ## Table of contents
+
+* [Quick start — run the app step by step](#quick-start--run-the-app-step-by-step)
+* [Dependencies](#dependencies) · [How the project works](#how-the-project-works) · [Part 1 vs Part 2 at a glance](#part-1-vs-part-2-at-a-glance) · [How to test Part 1 vs Part 2 yourself](#how-to-test-part-1-vs-part-2-yourself)
 
 1. [Problem statement](#1-problem-statement)
 2. [Objectives](#2-objectives)
@@ -245,27 +514,12 @@ sentences (robustness to short text), then by training time. The test set is
 
 ## 9. Installation
 
-Requires Python 3.10+ (developed with Python 3.13).
-
-```bash
-cd ai-document-reader
-python -m venv .venv
-.venv\Scripts\activate          # Windows   (macOS/Linux: source .venv/bin/activate)
-python -m pip install -r requirements.txt
-```
-
-Pretrained models (exact answers in Ask AI, English abstractive summary, Kinyarwanda TTS — large downloads; `requirements.txt` already lists them):
-
-```bash
-python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-python -m pip install transformers sentencepiece
-```
+See **[Quick start](#quick-start--run-the-app-step-by-step)** (steps 1–4) and
+**[Dependencies](#dependencies)**.
 
 > **Important:** install the packages into the **same** Python environment that
 > runs Streamlit. Using `python -m pip` and `python -m streamlit` (with the
-> environment activated) guarantees this. A message such as
-> *"No module named 'pymupdf'"* means the app is running in a different
-> environment from the one the packages were installed in.
+> environment activated) guarantees this.
 
 ## 10. Training
 
@@ -321,16 +575,8 @@ python training/train_language_detection_embeddings.py --configs fasttext_skipgr
 
 ## 11. Running the application
 
-```bash
-python -m streamlit run app.py
-```
-
-Open <http://localhost:8501>, upload a document (try the files in `samples/`),
-and explore the tabs. Choose the **Language Detection Model** — *FastText
-Embeddings (Part 2)* or *TF-IDF Baseline (Part 1)*; the Document Information
-card shows the representation, the model used and the other model's prediction
-for the same document. If a model has not been trained, the app shows the
-command to run instead of crashing.
+See **[Quick start](#quick-start--run-the-app-step-by-step)** (steps 5–6):
+`python -m streamlit run app.py`, then open <http://localhost:8501>.
 
 `samples/` contains an English TXT, a French PDF and a Kinyarwanda DOCX built
 from real held-out test sentences (they are unrelated sentences, so summaries
